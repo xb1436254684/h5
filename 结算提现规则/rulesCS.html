@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>结算提现规则</title>
+    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript" src="https://qiniuscd.yxcsx.com/APIURLcs.js"></script>
+<!--    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/APIURLzs.js"></script>-->
+    <style type="text/css">
+        * {padding: 0;margin: 0;box-sizing: border-box;}
+        ul {list-style: none;}
+        .main {width: 100%;padding: 1rem;}
+        .day-top {height: 5rem;line-height: 4rem;border-bottom: 1px dashed #35383F;}
+        .day-toptitle {float: left;font-weight: 700;margin-right: 1rem;}
+        .day-topcenter {padding: 0.8rem 1rem;background: #35383F;color: #fff;border-radius: 0.5rem;}
+        .day-centertitle {line-height: 3rem;font-weight: 700;}
+        .day-center {padding-top: 0.5rem;}
+        .list li {width: 45%;float: left;}
+        .list li:nth-of-type(2) {float: right;}
+        .listtitle {line-height: 3rem;}
+        .list li .box {background: #52CC5E;border-radius: 0.5rem;text-align: center;overflow: hidden;}
+        .list li:nth-of-type(2) .box {background: #35383F;}
+        .list li .box .box-title {line-height: 3rem;color: #fff;background: #08AF19;font-size: 1rem;}
+        .list li:nth-of-type(2) .box .box-title {color: #fff;background: #1C2230;}
+        .list li .box p {line-height: 4rem;color: #fff;font-size: 1.2rem;}
+        .clear {clear: both;}
+        .remarks {padding: 2rem 0;font-size: 0.6rem;line-height: 1.2rem;}
+        .layer {white-space: nowrap;position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);background: rgba(0, 0, 0, 0.5);padding: 0 1rem;height: 2rem; line-height: 2rem;color: #fff;border-radius: 0.5rem;z-index: 1000;}
+        #layer {display: none}
+
+    </style>
+</head>
+<body>
+<div class="layer" id="layer"></div>
+<div class="main">
+    <div class="day-top">
+        <span class="day-toptitle">结算日</span><span class="day-topcenter">每月&nbsp; 15~18&nbsp;号</span>
+    </div>
+    <div class="day-center">
+        <div class="day-centertitle">提现规则</div>
+        <ul class="list">
+            <li>
+                <p class="listtitle">1.结算日</p>
+                <div class="box">
+                    <div class="box-title">
+                        提现金额扣除
+                    </div>
+                    <p class="jiesuan"></p>
+                </div>
+            </li>
+            <li>
+                <p class="listtitle">2.非结算日</p>
+                <div class="box">
+                    <div class="box-title">
+                        提现金额扣除
+                    </div>
+                    <p class="feijieusan"></p>
+                </div>
+            </li>
+            <div class="clear"></div>
+        </ul>
+        <p class="remarks">
+            备注：每个月15～18号为结算日，结算日期间商家提现，平台扣除提现金额的3%作为平台服务费；其余时间均为非结算日，非结算日商家提现，平台将扣除提现金额的5%作为平台服务费。
+        </p>
+    </div>
+</div>
+<script>
+    function getToken(token) {
+        sessionStorage.setItem('token', token)
+    }
+
+    function setupWebViewJavascriptBridge(callback) {
+        if (window.WebViewJavascriptBridge) {
+            return callback(WebViewJavascriptBridge);
+        }
+        if (window.WVJBCallbacks) {
+            return window.WVJBCallbacks.push(callback);
+        }
+        window.WVJBCallbacks = [callback];
+        let WVJBIframe = document.createElement('iframe');
+        WVJBIframe.style.display = 'none';
+        WVJBIframe.src = 'https://__bridge_loaded__';
+        document.documentElement.appendChild(WVJBIframe);
+        setTimeout(function () {
+            document.documentElement.removeChild(WVJBIframe)
+        }, 0)
+    }
+
+    // 判断设备为 ios
+    function isIos() {
+        let u = navigator.userAgent;
+        if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+            return true;
+        }
+        return false;
+    }
+
+    $(function () {
+        setupWebViewJavascriptBridge(function (bridge) {
+            bridge.registerHandler('getToken', function (data, responseCallback) {
+                sessionStorage.setItem('token', data)
+            })
+        })
+        setTimeout(function () {
+            $.ajax({
+                url: api_url + '/user-proxy/user/gzBusinessBalance',
+                type: 'get',
+                dataType: 'json',
+                beforeSend: function (XMLHttpRequest) {
+                    XMLHttpRequest.setRequestHeader("token", sessionStorage.token);
+                    // XMLHttpRequest.setRequestHeader("token", '3fea64f3779e4a5ba07938335acb4161');
+                    XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                    XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                },
+                async: false,
+                success: function (res) {
+                    if (res.code == 0) {
+                        $(".jiesuan").text(res.data.bucklePoint + '%')
+                        $(".feijieusan").text(res.data.noBucklePoint + '%')
+                    } else {
+                        $("#layer").text(res.msg)
+                        $("#layer").show()
+                        setTimeout(function () {
+                            $("#layer").hide()
+                        }, 1000)
+                    }
+                },
+                error: function (e) {
+                    $("#layer").text(e.msg)
+                    $("#layer").show()
+                    setTimeout(function () {
+                        $("#layer").hide()
+                    }, 1000)
+                }
+            })
+        },500)
+    })
+</script>
+</body>
+</html>

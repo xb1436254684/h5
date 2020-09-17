@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>商家入驻</title>
+    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+    <script>
+        function getToken(token) {
+            sessionStorage.setItem('token', token)
+        }
+
+        function setupWebViewJavascriptBridge(callback) {
+            if (window.WebViewJavascriptBridge) {
+                return callback(WebViewJavascriptBridge);
+            }
+            if (window.WVJBCallbacks) {
+                return window.WVJBCallbacks.push(callback);
+            }
+            window.WVJBCallbacks = [callback];
+            let WVJBIframe = document.createElement('iframe');
+            WVJBIframe.style.display = 'none';
+            WVJBIframe.src = 'https://__bridge_loaded__';
+            document.documentElement.appendChild(WVJBIframe);
+            setTimeout(function () {
+                document.documentElement.removeChild(WVJBIframe)
+            }, 0)
+        }
+
+        // 判断设备为 ios
+        function isIos() {
+            var u = navigator.userAgent;
+            if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+                return true;
+            }
+            return false;
+        }
+
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted || (window.performance && window.performance.navigation.type == 2)) {
+                if (isIos()) {
+                    location.reload()
+                }
+            }
+        })
+    </script>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+    <script type="text/javascript"
+            src="https://webapi.amap.com/maps?v=1.3&key=04c6c0450f9fc2f01a8ef29615544414&plugin=AMap.PlaceSearch"></script>
+</head>
+<style>
+    * {padding: 0;margin: 0;box-sizing: border-box;}
+    body, html {-webkit-overflow-scrolling: touch;overflow-scrolling: touch;width: 100%;height: 100%;background: #f8f8f8;}
+    #example, body {font: 16px/150% "Microsoft YaHei", "微软雅黑"; color: #222; -webkit-font-smoothing: antialiased;background: #fff;overflow: hidden;overflow-y: auto}
+    #example {width: 100%;height: 100%}
+    ul {list-style: none;overflow: hidden;}
+    a {text-decoration: none;color: #000000;}
+    ol {display: block; list-style-type: decimal;}
+    i {font-style: normal;}
+    html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 { -webkit-text-size-adjust: 100%;}
+    * {-webkit-tap-highlight-color: rgba(255, 255, 255, 0);}
+    input, textarea {outline: none}
+    textarea {resize: none}
+    button {cursor: pointer;}
+    button:focus {outline: 0;}
+    .clear {clear: both;}
+    .layer {position: absolute;white-space: nowrap; left: 50%;top: 50%;transform: translate(-50%, -50%);background: rgba(0, 0, 0, 0.5);padding: 0 1rem;height: 2rem; line-height: 2rem;color: #fff;border-radius: 0.5rem;z-index: 1000;}
+    .form {padding: 0 1rem;padding-top: 2rem; background-image: linear-gradient(to bottom right, #53BE0A, #DAEFC7);width: 100%;height: 100%; overflow: hidden;overflow-y: auto;}
+    .item {margin-bottom: 0.5rem;}
+    .item > span {color: red;font-size: 0.6rem;display: block;}
+    .settled .item p {font-weight: 700;}
+    .register .item p {font-weight: normal;}
+    .item p span {font-weight: normal;font-size: 0.6rem;}
+    .item input {background: #fff;width: 100%;height: 2.8rem;border-radius: 0.2rem;border: 0;margin: 0.5rem 0;padding: 0 0.5rem;margin-bottom: 0.1rem;}
+    .item textarea {background: #fff;width: 100%;border-radius: 0.2rem;border: 0;margin: 0.5rem 0;padding: 0.5rem 0.5rem;margin-bottom: 0.1rem;}
+    .item_img {position: relative; float: left;width: calc((100% - 1rem) / 2);margin: 0.5rem 0; margin-right: 1rem;border-radius: 0.2rem;height: 8rem;background: #fff url(https://qiniuscd.yxcsx.com/jia.png) no-repeat center;background-size: 25% auto;background-position-y: 30%;overflow: hidden;}
+    .item_img img {width: 100%;height: 100%;top: 0;left: 0;position: absolute;z-index: 10;}
+    .file {display: none;}
+    .tishi {text-align: center;position: absolute;bottom: 20%;left: 0;width: 100%;}
+    .btn {background: #70BF2A;width: 100%;height: 2.8rem;text-align: center;border: 0;color: #fff;border-radius: 0.3rem;margin-bottom: 1rem;}
+    .form h1 {font-size: 1.2rem;}
+    .inaudit {background: #fff;width: 100%;height: 100%;position: relative;}
+    .cent {position: absolute;top: 50%;transform: translateY(-50%);text-align: center;width: 100%;color: #565A65;}
+    .cent img {width: 4rem;margin-bottom: 0.5rem;}
+    .inaudits {background: #fff;width: 100%;height: 100%;position: relative;}
+    .inauditsuccess {background: #fff;width: 100%;height: 100%;position: relative;}
+    .cent button {padding: 0 1rem;background: #70BF2A;color: #fff;border: 0;line-height: 2.2rem;height: 2.2rem;border-radius: 0.3rem;margin-top: 1rem;font-size: 1rem;}
+    .select {position: absolute;bottom: 1rem;left: 1rem;width: calc(100% - 2rem);z-index: 100;}
+    .bj {background: rgba(0, 0, 0, 0.5);position: absolute;width: 100%;height: 100%;left: 0;top: 0;z-index: 100;}
+    .close {width: 100%;height: 2.5rem;line-height: 2.5rem;background: #fff;text-align: center;border-radius: 0.3rem;color: #35383F;}
+    .fileul {border-radius: 0.3rem;background: #fff;margin-bottom: 1rem;color: #565A65;}
+    .fileul li {line-height: 3rem;text-align: center;height: 3rem;}
+    .bjloaling {background: rgba(0, 0, 0, 0.5);position: absolute;width: 100%;height: 100%;left: 0;top: 0;z-index: 100;}
+    .loaling {position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);width: 5rem;}
+    .loaling img {width: 100%;}
+    .mapmain {width: 100%;height: 100%;}
+    #container {height: 45%;width: 100%;}
+    .regionli {height: 55%;width: 100%;padding: 1rem;overflow: hidden;overflow-y: auto;}
+    .regionli li p:nth-of-type(2) {color: #92969F;font-size: 0.8rem;}
+    .regionli li {margin-bottom: 1rem;}
+    .regionselect {box-shadow: 2px 6px 5px #888888; z-index: 1000; width: 90%;height: 2.5rem;position: absolute;top: 2rem;left: 50%;transform: translateX(-50%);background: #fff;border-radius: 1.5rem;padding: 0 1rem;line-height: 2.5rem;font-size: 0.9rem;}
+    .regionselect img {width: 1.2rem;vertical-align: middle;margin-left: 0.5rem;margin-top: -1.8rem;}
+    .leftTitle {display: block;width: 30%;float: left;height: 100%;}
+    .input {width: 70%;display: block;float: right;border: 0;height: 100%;line-height: 2.5rem;padding-left: 0.5rem;}
+    .regionli li p span {background: #70BF2A;padding: 0 0.2rem; color: #fff;font-size: 0.6rem;border-radius: 0.1rem;}
+    .input::-webkit-input-placeholder { /* WebKit browsers 适配谷歌 */
+        color: #92969F;}
+    .input:-moz-placeholder { /* Mozilla Firefox 4 to 18 适配火狐 */
+        color: #92969F;}
+    .input::-moz-placeholder { /* Mozilla Firefox 19+ 适配火狐 */
+        color: #92969F;}
+    .input:-ms-input-placeholder { /* Internet Explorer 10+  适配ie*/
+        color: #92969F;}
+    .sedAddress {width: 100%;height: 2.8rem;line-height: 2.8rem;background: #fff;border-radius: 0.2rem;margin: 0.5rem 0;padding: 0 0.5rem;overflow: hidden;white-space: nowrap;text-overflow: ellipsis}
+    .sedAddress span {color: #92969F;font-size: 0.8rem;}
+    .citySed {width: 100%;height: 100%;overflow: hidden;overflow-y: auto;position: absolute;top: 0;left: 0;z-index: 1001;background: #fff;}
+    #cityUl li {height: 2.8rem;line-height: 2.8rem;border-bottom: 1px solid #DBDBDB;padding: 0 1rem;}
+    #cityUl li:last-of-type {border-bottom: 0;}
+    .ver-city-list-box { width: 100%; height: 100%; position: fixed; left: 0; background: #fff; overflow: auto; top: 0; z-index: 9999999;display: none}
+    .ver-city-list-box .ver-city-list-tag { color: #35383F;position: fixed; right: -0.5rem; z-index: 999; padding: 0.2rem; height: calc(100% - 1rem); overflow: hidden; margin-top: 1rem;}
+    .ver-city-list-box .ver-city-list-tag li { cursor: pointer; width: 2.5rem; text-align: center;font-size: 0.8rem}
+    .ver-city-list-items dl { margin: 0; padding: 0;}
+    .ver-city-list-items dt { line-height: 35px; border-bottom: 1px solid #dedede; padding-left: 15px;}
+    .ver-city-list-items .ver-city-list-items-hot dt { color: red;}
+    .ver-city-list-items dd { border-bottom: 1px solid #dedede; margin: 0; padding: 0 15px; line-height: 35px;}
+    .ver-city-list-name { cursor: pointer;}
+    .ver-city-list-items-hot .ver-city-list-name { display: inline-block;}
+    .ver-city-list-items-hot .ver-city-list-name + .ver-city-list-name { margin-left: 5px;}
+    .ver-citylist-search-box input { width: 140px; height: 25px; line-height: 25px; vertical-align: middle; outline: none; padding-left: 10px; padding-right: 30px; border-radius: 25px; border: 1px solid #999;}
+    .ver-citylist-search-box i { position: absolute; right: 0px; height: 30px; top: 50%; margin-top: -15px; cursor: pointer; width: 30px; text-align: center;}
+    .ver-city-list-items {padding: 0.5rem 0}
+    .leftTitle span {overflow: hidden;white-space: nowrap;text-overflow: ellipsis;display: inline-block;width: calc(100% - 1.7rem);}
+    #regionli #wudata {display: block;text-align: center;color: #c6c6c6;line-height: 5rem;}
+    .bixuan {color: red;padding-right: 0.5rem;margin-bottom: 0.5rem;}
+    .xuanzhe {float: right;width: 2rem;margin-top: 0.5rem;}
+    .xuanzhe1 {float: right;width: 1.5rem;margin-top: 0.5rem;}
+</style>
+
+<body>
+<div id="example"></div>
+<script type="text/babel">
+    class Toggle extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                settled: true,//商家入驻
+                inaudit: false,//审核中
+                inaudits: false,//审核失败
+                inauditsuccess: false,//下载
+                layer: false,//提示框
+                msg: '',//提示框内容
+                loading: false,//加载框
+                imgIi: false,//
+                onChangeImg: 0,//当前编辑的图片序号
+                onChangeImg0: '',//展示
+                onChangeImg1: '',//展示
+                onChangeImg2: '',//展示
+                onChangeImg4: '',//展示
+                onChangeImg5: '',//展示
+                uploadUrl: "https://upload.qiniup.com/",//上传地址
+                urlHeader: "https://qiniuscd.yxcsx.com/",//请求图片开头网站
+                filesImg: {businessLicense: [], foodSafe: [], doorHeadImg: [], idCardPhotos1: [], idCardPhotos2: []},//上传前文件
+                pictureUrl: {},//传给后台的路径
+                nums: null,
+                shopSubmitObj: {
+                    shopName: '',//店铺名称
+                    managerName: '',//申请人姓名
+                    phone: '',//申请人电话
+                    shopDescribe: '',//店铺介绍
+                    location: '',//店铺地址经纬度
+                    shopSite: '',//店铺详细地址
+                    shopSize: '',//门店大小
+                    legalName: '',//法人姓名
+                    legalPhone: '',//法人电话
+                    legalIdentity: '',//法人身份证号
+                    provinceCode: '',
+                    cityCode: '',
+                    countyCode: '',
+                },
+                gaodeserviceak: '869e2fe2975a241f3c9aa24a6a447e6b',
+                bgToken: '',
+                shopAddress: '',
+                shopNameREG: 'hidden',
+                nameREG: 'hidden',
+                phoneREG: 'hidden',
+                shopDescribeREG: 'hidden',
+                shopSiteREG: 'hidden',
+                shopSizeREG: 'hidden',
+                legalNameREG: 'hidden',
+                legalPhoneREG: 'hidden',
+                legalIdentityREG: 'hidden',
+                locationREG: 'hidden',
+                succes: false,
+            };
+            this.shopNameChange = this.shopNameChange.bind(this);
+            this.nameChange = this.nameChange.bind(this);
+            this.phoneChange = this.phoneChange.bind(this);
+            this.shopSiteChange = this.shopSiteChange.bind(this);
+            this.shopSizeChange = this.shopSizeChange.bind(this);
+            this.legalNameChange = this.legalNameChange.bind(this);
+            this.legalPhoneChange = this.legalPhoneChange.bind(this);
+            this.legalIdentityChange = this.legalIdentityChange.bind(this);
+            let citiesLists
+            $.ajax({
+                url: 'https://qiniuscd.yxcsx.com/city.json',
+                type: 'get',
+                dataType: 'json',
+                async: false,
+                success: function (res) {
+                    citiesLists = res
+                },
+                error: function (e) {
+                    console.log(JSON.stringify(e));
+                }
+            })
+            let _this = this
+            window.verCity = (function () {
+                let callBack = function (data) {
+                    _this.setState({
+                        city: data
+                    })
+                };
+                let city = function (param) {
+                    props;
+                    if (param.callbacks) {
+                        callBack = param.callbacks;
+                    }
+                    //获取定位点
+                    get_linkItems()
+                    let ids = document.getElementById("ver-city-list-box");
+                    let tags = ids.querySelectorAll(".ver-city-tag-li");
+                    [].forEach.call(tags, function (items) {
+                        items.onclick = function () {
+                            let data = this.getAttribute("data-items");
+                            let docu = ids.querySelector("#" + data);
+                            let tops = docu.offsetTop;
+                            ids.scrollTop = tops - 40;
+                        }
+                    });
+                    let citys = document.querySelectorAll(".ver-city-list-name");
+                    [].forEach.call(citys, function (its) {
+                        its.onclick = function () {
+                            let text = this.innerText;
+                            callBack(text);
+                            document.getElementById("ver-city-list-box").style.display = 'none'
+                            //切换地图
+                            $.ajax({
+                                type: "GET",
+                                url: 'https://restapi.amap.com/v3/geocode/geo?key=' + _this.state.gaodeserviceak,
+                                data: {
+                                    address: _this.state.city
+                                },
+                                dataType: "jsonp",
+                                async: false,
+                                success: function (res) {
+                                    if (res.status == 1) {
+                                        let center = res.geocodes[0].location.split(",")
+                                        maps.setCenter([center[0], center[1]])
+                                    } else {
+                                        console.log(res)
+                                    }
+                                },
+                                error: function (err) {
+                                    console.log(err)
+                                }
+                            });
+                        }
+                    });
+                };
+                let get_linkItems = function () {
+                    let box = document.createElement("div");
+                    box.className = "ver-city-list-box";
+                    box.id = "ver-city-list-box";
+                    let inits = Object.keys(citiesLists);
+                    let tag = document.createElement("ul");
+                    tag.className = "ver-city-list-tag";
+                    let tag_sta = document.createElement("li");
+                    tag_sta.className = "ver-city-tag-li hot";
+                    tag_sta.setAttribute("data-items", "hot");
+                    tag_sta.innerHTML = '<i class="city-icon city-icon-start"></i>';
+                    tag.appendChild(tag_sta);
+                    for (let i in inits) {
+                        tag_sta = document.createElement("li");
+                        tag_sta.className = "ver-city-tag-li " + inits[i];
+                        tag_sta.setAttribute("data-items", inits[i]);
+                        tag_sta.innerHTML = inits[i];
+                        tag.appendChild(tag_sta);
+                    }
+                    box.appendChild(tag);
+                    let items = document.createElement("ul");
+                    items.className = "ver-city-list-items";
+                    for (let j in citiesLists) {
+                        let cit = citiesLists[j];
+                        let lis = document.createElement("li");
+                        lis.id = j;
+                        let ciyes = document.createElement("dl");
+                        let _l = '<dt>' + j + '</dt><dd>';
+                        for (let k in cit) {
+                            let cc = cit[k].name;
+                            _l += '<p class="ver-city-list-name">' + cc + '</p>';
+                        }
+                        _l += "</dd>";
+                        ciyes.innerHTML = _l;
+                        lis.appendChild(ciyes);
+                        items.appendChild(lis);
+                    }
+                    box.appendChild(items);
+                    document.body.appendChild(box);
+                    close.onclick = function () {
+                        let ids = document.getElementById("ver-city-list-box");
+                        ids.scrollTop = 0;
+                        ids.scrollLeft = 0;
+                        ids.classList.remove("ver-city-box-show");
+                        ids.classList.add("ver-city-box-hide");
+                    };
+                };
+                let props = function () {
+                    if (!Array.prototype.forEach) {
+                        Array.prototype.forEach = function (callback, thisArg) {
+                            let T, k;
+                            if (this == null) {
+                                throw new TypeError(" this is null or not defined");
+                            }
+                            let O = Object(this);
+                            let len = O.length >>> 0; // Hack to convert O.length to a UInt32
+                            if ({}.toString.call(callback) != "[object Function]") {
+                                throw new TypeError(callback + " is not a function");
+                            }
+                            if (thisArg) {
+                                T = thisArg;
+                            }
+                            k = 0;
+                            while (k < len) {
+                                let kValue;
+                                if (k in O) {
+                                    kValue = O[k];
+                                    callback.call(T, kValue, k, O);
+                                }
+                                k++;
+                            }
+                        };
+                    }
+                }();
+                return city;
+            })();
+            new verCity({});
+        }
+
+        //判断是否是安卓
+        isIos = () => {
+            let u = navigator.userAgent;
+            if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+                return true;
+            }
+            return false;
+        }
+
+        componentDidMount(props) {
+            let _this = this
+            setTimeout(function () {
+                if (_this.isIos()) {
+                    setupWebViewJavascriptBridge(function (bridge) {
+                        bridge.registerHandler('getToken', function (response) {
+                            _this.setState({bgToken: response})
+                            // _this.setState({bgToken: 'fbe3918758ba42b58cccf6bd85e32750'})
+                        })
+                    })
+                } else {
+                    // _this.setState({bgToken: 'a5de1e645eda4b41ae783866ddc5d0e0'})
+                    _this.setState({bgToken: sessionStorage.token})
+                }
+                if (sessionStorage.stats) {
+                    _this.setState(JSON.parse(sessionStorage.stats))
+                    this.setState({locationREG: 'hidden'})
+                }
+                localStorage.removeItem('qiniutoken')
+                if (!localStorage.getItem('qiniutoken')) {
+                    _this.getQiniuToken()
+                }
+            }.bind(this), 500)
+        }
+        //获取七牛云token
+        getQiniuToken = (e) => {
+            let _this = this
+            $.ajax({
+                url: 'https://api.yxcsx.com/upload-proxy/QiNiuUpToken',
+                type: 'get',
+                dataType: 'json',
+                headers: {
+                    'token': _this.state.bgToken
+                },
+                async: false,
+                success: function (res) {
+                    localStorage.setItem('qiniutoken', res.data.token)
+                },
+                error: function (e) {
+                    // console.log(JSON.stringify(e));
+                }
+            })
+        }
+
+        //obj,pictureUrlObj发生改变时编辑filesImg数组
+        componentDidUpdate(nextProps, nextState) {
+            //上传的obj对象变更时添加或者修改对应的filesImg上传数组
+            if (nextState.succes !== this.state.succes) {
+                let _this = this
+                if (this.state.succes == true) {
+                    //提交到后台接口
+                    this.state.shopSubmitObj.pictureUrl = JSON.stringify(this.state.pictureUrl)
+                    $.ajax({
+                        type: "post",
+                        url: 'https://api.yxcsx.com/goods-proxy/shop/addAuditShop',
+                        beforeSend: function (XMLHttpRequest) {
+                            XMLHttpRequest.setRequestHeader("token", _this.state.bgToken);
+                            XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                            XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                        },
+                        dataType: "json",
+                        data: JSON.stringify(_this.state.shopSubmitObj),
+                        async: false,
+                        success: function (res) {
+                            if (res.code == 0) {
+                                _this.setState({
+                                    loading: false
+                                });
+                                _this.setState({msg: '上传成功', layer: true});
+                                setTimeout(function () {
+                                    _this.setState({layer: false});
+                                }.bind(this), 1000)
+                                _this.setState({inaudit: true, settled: false})
+                            } else {
+                                _this.setState({msg: res.msg, layer: true});
+                                setTimeout(function () {
+                                    _this.setState({layer: false});
+                                }.bind(this), 1000)
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err)
+                        }
+                    });
+                }
+                return false
+            }
+            return true
+        }
+
+
+        //生成唯一标识符
+        generateUUID = () => {
+            let d = new Date().getTime();
+            let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                let r = (d + Math.random() * 16) % 16 | 0;
+                d = Math.floor(d / 16);
+                return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            return uuid;
+        }
+        // 提交表单
+        handleOk = () => {
+            const {shopName, managerName, phone, shopSite, shopSize, shopDescribe, legalName, legalPhone,location, legalIdentity} = this.state.shopSubmitObj;
+            if (shopName == '') {
+                this.setState({shopNameREG: 'visible'})
+                this.layersmust()
+                return
+            }
+            if (managerName == '') {
+                this.setState({nameREG: 'visible'})
+                this.layersmust()
+                return
+            }
+            if (phone == '') {
+                this.setState({phoneREG: 'visible'})
+                this.layersmust()
+                return
+            }
+            if (shopSite == '') {
+                this.setState({shopSiteREG: 'visible'})
+                this.layersmust()
+                return
+            }
+            if (shopName == '') {
+                this.setState({shopNameREG: 'visible'})
+                this.layersmust()
+                return
+            }
+            if (shopSize == '') {
+                this.setState({shopSizeREG: 'visible'})
+                this.layersmust()
+                return
+            }
+            if (shopDescribe == '') {
+                this.setState({shopDescribeREG: 'visible'})
+                this.layersmust()
+                return
+            }
+            if (legalName == '') {
+                this.setState({legalNameREG: 'visible'})
+                this.layersmust()
+                return
+            }
+            if (legalPhone == '') {
+                this.setState({legalPhoneREG: 'visible'})
+                this.layersmust()
+                return
+            }
+            if (legalIdentity == '') {
+                this.setState({legalIdentityREG: 'visible'})
+                this.layersmust()
+                return
+            }
+            if (location == '') {
+                this.setState({locationREG: 'visible'})
+                this.layersmust()
+                return
+            }
+            if (!this.MustFill()) return
+            if (this.state.shopNameREG == 'visible' || this.state.nameREG == 'visible' || this.state.phoneREG
+                == 'visible' || this.state.shopDescribeREG == 'visible' || this.state.shopSiteREG == 'visible' ||
+                this.state.shopSizeREG == 'visible' || this.state.legalNameREG == 'visible' || this.state.legalPhoneREG == 'visible' ||
+                this.state.legalIdentityREG == 'visible' || this.state.locationREG == 'visible') return
+            const {filesImg, uploadUrl, urlHeader} = this.state;
+            this.setState({
+                loading: true
+            });
+            const _this = this;
+            if (filesImg.businessLicense != []) {
+                let suffix = filesImg.businessLicense[0].files.name.substring(filesImg.businessLicense[0].files.name.lastIndexOf(".") + 1);
+                let businessLicense = new FormData();
+                businessLicense.append("file", filesImg.businessLicense[0].files);
+                businessLicense.append("token", localStorage.getItem('qiniutoken'));
+                businessLicense.append("name", filesImg.businessLicense[0].name);
+                businessLicense.append("key", _this.generateUUID() + '.' + suffix);
+                $.ajax({
+                    url: uploadUrl,
+                    type: 'post',
+                    data: businessLicense,
+                    contentType: false,
+                    beforeSend: function (XMLHttpRequest) {
+                        XMLHttpRequest.setRequestHeader("Authorization", 'UpToken ' + localStorage.getItem('qiniutoken'));
+                    },
+                    processData: false,
+                    success: function (res) {
+                        if (res) {
+                            let arr = []
+                            let obj = {}
+                            obj.url = urlHeader + res.key
+                            obj.uid = _this.generateUUID()
+                            arr.push(obj)
+                            _this.state.pictureUrl.businessLicense = arr
+                            _this.setState({
+                                pictureUrl: _this.state.pictureUrl,
+                            });
+                            if (Object.keys(_this.state.pictureUrl).length == 5) {
+                                _this.setState({
+                                    succes: true
+                                })
+                            }
+                        }
+                    },
+                })
+            }
+            if (filesImg.foodSafe.length != 0) {
+                let suffix = filesImg.foodSafe[0].files.name.substring(filesImg.foodSafe[0].files.name.lastIndexOf(".") + 1);
+                let foodSafe = new FormData();
+                foodSafe.append("file", filesImg.foodSafe[0].files);
+                foodSafe.append("token", localStorage.getItem('qiniutoken'));
+                foodSafe.append("name", filesImg.foodSafe[0].name);
+                foodSafe.append("key", _this.generateUUID() + '.' + suffix);
+                $.ajax({
+                    url: uploadUrl,
+                    type: 'post',
+                    data: foodSafe,
+                    contentType: false,
+                    beforeSend: function (XMLHttpRequest) {
+                        XMLHttpRequest.setRequestHeader("Authorization", 'UpToken ' + localStorage.getItem('qiniutoken'));
+                    },
+                    processData: false,
+                    success: function (res) {
+                        if (res) {
+                            let arr = []
+                            let obj = {}
+                            obj.url = urlHeader + res.key
+                            obj.uid = _this.generateUUID()
+                            arr.push(obj)
+                            _this.state.pictureUrl.foodSafe = arr
+                            _this.setState({
+                                pictureUrl: _this.state.pictureUrl,
+                            });
+                            if (Object.keys(_this.state.pictureUrl).length == 5) {
+                                _this.setState({
+                                    succes: true
+                                })
+                            }
+                        }
+                    },
+                })
+            } else {
+                let arr = []
+                _this.state.pictureUrl.foodSafe = arr
+                _this.setState({
+                    pictureUrl: _this.state.pictureUrl,
+                });
+                if (Object.keys(_this.state.pictureUrl).length == 5) {
+                    _this.setState({
+                        succes: true
+                    })
+                }
+            }
+            if (filesImg.doorHeadImg != []) {
+                let suffix = filesImg.doorHeadImg[0].files.name.substring(filesImg.doorHeadImg[0].files.name.lastIndexOf(".") + 1);
+                let doorHeadImg = new FormData();
+                doorHeadImg.append("file", filesImg.doorHeadImg[0].files);
+                doorHeadImg.append("token", localStorage.getItem('qiniutoken'));
+                doorHeadImg.append("name", filesImg.doorHeadImg[0].name);
+                doorHeadImg.append("key", _this.generateUUID() + '.' + suffix);
+                $.ajax({
+                    url: uploadUrl,
+                    type: 'post',
+                    data: doorHeadImg,
+                    contentType: false,
+                    beforeSend: function (XMLHttpRequest) {
+                        XMLHttpRequest.setRequestHeader("Authorization", 'UpToken ' + localStorage.getItem('qiniutoken'));
+                    },
+                    processData: false,
+                    success: function (res) {
+                        if (res) {
+                            let arr = []
+                            let obj = {}
+                            obj.url = urlHeader + res.key
+                            obj.uid = _this.generateUUID()
+                            arr.push(obj)
+                            _this.state.pictureUrl.doorHeadImg = arr
+                            _this.setState({
+                                pictureUrl: _this.state.pictureUrl,
+                            });
+                            if (Object.keys(_this.state.pictureUrl).length == 5) {
+                                _this.setState({
+                                    succes: true
+                                })
+                            }
+                        }
+                    },
+                })
+            }
+            if (filesImg.idCardPhotos1 != []) {
+                let suffix = filesImg.idCardPhotos1[0].files.name.substring(filesImg.idCardPhotos1[0].files.name.lastIndexOf(".") + 1);
+                let idCardPhotos1 = new FormData();
+                idCardPhotos1.append("file", filesImg.idCardPhotos1[0].files);
+                idCardPhotos1.append("token", localStorage.getItem('qiniutoken'));
+                idCardPhotos1.append("name", filesImg.idCardPhotos1[0].name);
+                idCardPhotos1.append("key", _this.generateUUID() + '.' + suffix);
+                $.ajax({
+                    url: uploadUrl,
+                    type: 'post',
+                    data: idCardPhotos1,
+                    contentType: false,
+                    beforeSend: function (XMLHttpRequest) {
+                        XMLHttpRequest.setRequestHeader("Authorization", 'UpToken ' + localStorage.getItem('qiniutoken'));
+                    },
+                    processData: false,
+                    success: function (res) {
+                        if (res) {
+                            let arr = []
+                            let obj = {}
+                            obj.url = urlHeader + res.key
+                            obj.uid = _this.generateUUID()
+                            arr.push(obj)
+                            _this.state.pictureUrl.idCardPhotos1 = arr
+                            _this.setState({
+                                pictureUrl: _this.state.pictureUrl,
+                            });
+                            if (Object.keys(_this.state.pictureUrl).length == 5) {
+                                _this.setState({
+                                    succes: true
+                                })
+                            }
+                        }
+                    },
+                })
+            }
+            if (filesImg.idCardPhotos2 != []) {
+                let suffix = filesImg.idCardPhotos2[0].files.name.substring(filesImg.idCardPhotos2[0].files.name.lastIndexOf(".") + 1);
+                let idCardPhotos2 = new FormData();
+                idCardPhotos2.append("file", filesImg.idCardPhotos2[0].files);
+                idCardPhotos2.append("token", localStorage.getItem('qiniutoken'));
+                idCardPhotos2.append("name", filesImg.idCardPhotos2[0].name);
+                idCardPhotos2.append("key", _this.generateUUID() + '.' + suffix);
+                $.ajax({
+                    url: uploadUrl,
+                    type: 'post',
+                    data: idCardPhotos2,
+                    contentType: false,
+                    beforeSend: function (XMLHttpRequest) {
+                        XMLHttpRequest.setRequestHeader("Authorization", 'UpToken ' + localStorage.getItem('qiniutoken'));
+                    },
+                    processData: false,
+                    success: function (res) {
+                        if (res) {
+                            let arr = []
+                            let obj = {}
+                            obj.url = urlHeader + res.key
+                            obj.uid = _this.generateUUID()
+                            arr.push(obj)
+                            _this.state.pictureUrl.idCardPhotos2 = arr
+                            _this.setState({
+                                pictureUrl: _this.state.pictureUrl,
+                            });
+                            if (Object.keys(_this.state.pictureUrl).length == 5) {
+                                _this.setState({
+                                    succes: true
+                                })
+                            }
+                        }
+                    },
+                })
+            }
+        }
+
+        layersmust = () => {
+            this.setState({msg: '请将信息补充完整在进行上传', layer: true});
+            setTimeout(function () {
+                this.setState({layer: false});
+            }.bind(this), 1000)
+        }
+        //验证必填项
+        MustFill = () => {
+            if (document.getElementById("preview0")) {
+                if (document.getElementById("preview0").style.display == "none") {
+                    this.layersmust()
+                    return false
+                }
+            }
+            if (document.getElementById("preview2")) {
+                if (document.getElementById("preview2").style.display == "none") {
+                    this.layersmust()
+                    return false
+                }
+            }
+            if (document.getElementById("preview4")) {
+                if (document.getElementById("preview4").style.display == "none") {
+                    this.layersmust()
+                    return false
+                }
+            }
+            if (document.getElementById("preview5")) {
+                if (document.getElementById("preview5").style.display == "none") {
+                    this.layersmust()
+                    return false
+                }
+            }
+            return true;
+        }
+        //跳转地址
+        sedAddress = (e) => {
+            try{
+                sessionStorage.setItem('stats', JSON.stringify(this.state))
+            }catch(oException){
+                if(oException.name== 'QuotaExceededError'){
+                    console.log('超出本地存储限额！');
+                    sessionStorage.clear();
+                    sessionStorage.setItem('stats', JSON.stringify(this.state))
+                }
+            }
+            // try {
+            //     sessionStorage.setItem('stats', JSON.stringify(this.state))
+            // } catch (e) {
+            //     // sessionStorage容量不够，根据保存的时间删除已缓存到 sessionStorage
+            //     if (e.name.toUpperCase().indexOf('QUOTA') >= 0) {
+            //         sessionStorage.removeItem('stats')
+            //         sessionStorage.setItem('stats', JSON.stringify(this.state))
+            //     }
+            // }
+            // window.location.href = './map11.html'
+            window.location.href = 'https://qiniuscd.yxcsx.com/map11.html'
+        }
+        //控制选择底部弹框显示
+        img0Click = (e) => {
+            this.setState({
+                onChangeImg: e
+            })
+            document.getElementById('img' + e).click()
+        }
+        setImagePreview = () => {
+            // const {filesImg, onChangeImg} = this.state;
+            // let file_head = document.getElementById('img' + onChangeImg);
+            // let src = ''
+            // let file = file_head.files[0];
+            // let reg = /\.(jpg|png|jpeg)$/ig;
+            // if (!reg.test(file.name)) {
+            //     this.setState({layer: true, msg: '只能是jpg、png或者jpeg格式的图片'})
+            //     setTimeout(function () {
+            //         this.setState({layer: false});
+            //     }.bind(this), 1000)
+            //     return false
+            // }
+            // let reader = new FileReader();
+            // // 监听reader对象的的onload事件，当图片加载完成时，把base64编码賦值给预览图片
+            // let _this = this
+            // reader.addEventListener("load", function () {
+            //     src = reader.result;
+            //     if (onChangeImg == 0) {
+            //         let arr = []
+            //         let obj = {}
+            //         obj.src = src
+            //         obj.files = file
+            //         arr.push(obj)
+            //         _this.state.filesImg.businessLicense = arr
+            //         _this.setState({filesImg: _this.filesImg, onChangeImg0: src})
+            //     } else if (onChangeImg == 1) {
+            //         let arr = []
+            //         let obj = {}
+            //         obj.src = src
+            //         obj.files = file
+            //         arr.push(obj)
+            //         _this.state.filesImg.foodSafe = arr
+            //         _this.setState({filesImg: _this.filesImg, onChangeImg1: src})
+            //     } else if (onChangeImg == 2) {
+            //         let arr = []
+            //         let obj = {}
+            //         obj.src = src
+            //         obj.files = file
+            //         arr.push(obj)
+            //         _this.state.filesImg.doorHeadImg = arr
+            //         _this.setState({filesImg: _this.filesImg, onChangeImg2: src})
+            //     } else if (onChangeImg == 4) {
+            //         let arr = []
+            //         let obj = {}
+            //         obj.src = src
+            //         obj.files = file
+            //         arr.push(obj)
+            //         _this.state.filesImg.idCardPhotos1 = arr
+            //         _this.setState({filesImg: _this.filesImg, onChangeImg4: src})
+            //     } else if (onChangeImg == 5) {
+            //         let arr = []
+            //         let obj = {}
+            //         obj.src = src
+            //         obj.files = file
+            //         arr.push(obj)
+            //         _this.state.filesImg.idCardPhotos2 = arr
+            //         _this.setState({filesImg: _this.filesImg, onChangeImg5: src})
+            //     }
+            //     _this.setState({
+            //         filesImg
+            //     });
+            // }, false);
+            // // 调用reader.readAsDataURL()方法，把图片转成base64
+            // reader.readAsDataURL(file);
+            let _this = this
+            const {filesImg, onChangeImg} = this.state;
+            let file_head = document.getElementById('img' + onChangeImg);
+            let file = file_head.files[0];
+            let reg = /\.(jpg|png|jpeg)$/ig;
+            if (!reg.test(file.name)) {
+                this.setState({layer: true, msg: '只能是jpg、png或者jpeg格式的图片'})
+                setTimeout(function () {
+                    this.setState({layer: false});
+                }.bind(this), 1000)
+                return false
+            }
+            let URL = window.URL || window.webkitURL;
+            let blob = URL.createObjectURL(file);
+            let base64;
+            let img = new Image();
+            img.src = blob;
+            img.onload = function() {
+                let that = this;
+                //生成比例
+                let w = that.width,
+                    h = that.height,
+                    scale = w / h;
+                w = 400 || w;
+                h = w / scale;
+                //生成canvas
+                let canvas = document.createElement('canvas');
+                let ctx = canvas.getContext('2d');
+                $(canvas).attr({
+                    width: w,
+                    height: h
+                });
+                ctx.drawImage(that, 0, 0, w, h);
+                // 生成base64
+                base64 = canvas.toDataURL('image/jpeg', 0.8 || 0.8);
+                if (onChangeImg == 0) {
+                    let arr = []
+                    let obj = {}
+                    obj.src = base64
+                    obj.files = file
+                    arr.push(obj)
+                    _this.state.filesImg.businessLicense = arr
+                    _this.setState({filesImg: _this.filesImg, onChangeImg0: base64})
+                } else if (onChangeImg == 1) {
+                    let arr = []
+                    let obj = {}
+                    obj.src = base64
+                    obj.files = file
+                    arr.push(obj)
+                    _this.state.filesImg.foodSafe = arr
+                    _this.setState({filesImg: _this.filesImg, onChangeImg1: base64})
+                } else if (onChangeImg == 2) {
+                    let arr = []
+                    let obj = {}
+                    obj.src = base64
+                    obj.files = file
+                    arr.push(obj)
+                    _this.state.filesImg.doorHeadImg = arr
+                    _this.setState({filesImg: _this.filesImg, onChangeImg2: base64})
+                } else if (onChangeImg == 4) {
+                    let arr = []
+                    let obj = {}
+                    obj.src = base64
+                    obj.files = file
+                    arr.push(obj)
+                    _this.state.filesImg.idCardPhotos1 = arr
+                    _this.setState({filesImg: _this.filesImg, onChangeImg4: base64})
+                } else if (onChangeImg == 5) {
+                    let arr = []
+                    let obj = {}
+                    obj.src = base64
+                    obj.files = file
+                    arr.push(obj)
+                    _this.state.filesImg.idCardPhotos2 = arr
+                    _this.setState({filesImg: _this.filesImg, onChangeImg5: base64})
+                }
+                _this.setState({
+                    filesImg
+                });
+            };
+        }
+
+        //input 用户输入双向绑定自定义方法
+        shopNameChange(val) {
+            const {shopAddress} = this.state
+            let obj = Object.assign(this.state.shopSubmitObj, {shopName: val.target.value})
+            this.setState({
+                shopSubmitObj: obj
+            })
+            this.setState({shopAddress: shopAddress})
+            if (!val.target.value.match(/^[ ]*$/)) {
+                if (!(/^.{1,30}$/.test(val.target.value))) {
+                    this.setState({shopNameREG: 'visible'})
+                } else {
+                    this.setState({shopNameREG: 'hidden'})
+                }
+            } else {
+                this.setState({shopNameREG: 'visible'})
+            }
+
+        }
+
+        nameChange(val) {
+            const {shopAddress} = this.state
+            let obj = Object.assign(this.state.shopSubmitObj, {managerName: val.target.value})
+            this.setState({
+                shopSubmitObj: obj
+            })
+            this.setState({shopAddress: shopAddress})
+            if (val.target.value.indexOf(" ") == -1) {
+                if (!(/^.{1,10}$/.test(val.target.value))) {
+                    this.setState({nameREG: 'visible'})
+                } else {
+                    this.setState({nameREG: 'hidden'})
+                }
+            } else {
+                this.setState({nameREG: 'visible'})
+            }
+        }
+
+        phoneChange(val) {
+            const {shopAddress} = this.state
+            let obj = Object.assign(this.state.shopSubmitObj, {phone: val.target.value})
+            this.setState({
+                shopSubmitObj: obj
+            })
+            this.setState({shopAddress: shopAddress})
+
+            if (!(/^1[0-9]{10}$/.test(val.target.value))) {
+                this.setState({phoneREG: 'visible'})
+            } else {
+                this.setState({phoneREG: 'hidden'})
+            }
+        }
+
+        shopDescribeChange(val) {
+            const {shopAddress} = this.state
+            let obj = Object.assign(this.state.shopSubmitObj, {shopDescribe: val.target.value})
+            this.setState({
+                shopSubmitObj: obj
+            })
+            this.setState({shopAddress: shopAddress})
+            if (!val.target.value.match(/^[ ]*$/)) {
+                if (!(/^.{1,300}$/.test(val.target.value.replace(/[\r\n]/g, "")))) {
+                    this.setState({shopDescribeREG: 'visible'})
+                } else {
+                    this.setState({shopDescribeREG: 'hidden'})
+                }
+            } else {
+                this.setState({shopDescribeREG: 'visible'})
+            }
+        }
+
+        shopSiteChange(val) {
+            const {shopAddress} = this.state
+            let obj = Object.assign(this.state.shopSubmitObj, {shopSite: val.target.value})
+            this.setState({
+                shopSubmitObj: obj
+            })
+            this.setState({shopAddress: shopAddress})
+            if (!val.target.value.match(/^[ ]*$/)) {
+                if (!(/^.{1,40}$/.test(val.target.value))) {
+                    this.setState({shopSiteREG: 'visible'})
+                } else {
+                    this.setState({shopSiteREG: 'hidden'})
+                }
+            } else {
+                this.setState({shopSiteREG: 'visible'})
+            }
+
+        }
+
+        shopSizeChange(val) {
+            const {shopAddress} = this.state
+            let obj = Object.assign(this.state.shopSubmitObj, {shopSize: val.target.value})
+            this.setState({
+                shopSubmitObj: obj
+            })
+            this.setState({shopAddress: shopAddress})
+            if (/^([1-9]\d*|0)(\.\d*[1-9])?$/.test(val.target.value)) {
+                if (/^\d+$/.test(Number(val.target.value))) {
+                    if (0 < Number(val.target.value) && Number(val.target.value) < 1000000) {
+                        // if (!(/^(0|\+?[1-9][0-9]{0,4})$/.test(val.target.value))) {
+                        this.setState({shopSizeREG: 'hidden'})
+                    } else {
+                        this.setState({shopSizeREG: 'visible'})
+                    }
+                } else {
+                    this.setState({shopSizeREG: 'visible'})
+                }
+            } else {
+                this.setState({shopSizeREG: 'visible'})
+            }
+        }
+
+        legalNameChange(val) {
+            const {shopAddress} = this.state
+            let obj = Object.assign(this.state.shopSubmitObj, {legalName: val.target.value})
+            this.setState({
+                shopSubmitObj: obj
+            })
+            this.setState({shopAddress: shopAddress})
+            if (val.target.value.indexOf(" ") == -1) {
+                if (!(/^.{1,10}$/.test(val.target.value))) {
+                    this.setState({legalNameREG: 'visible'})
+                } else {
+                    this.setState({legalNameREG: 'hidden'})
+                }
+            } else {
+                this.setState({legalNameREG: 'visible'})
+            }
+        }
+
+        legalPhoneChange(val) {
+            const {shopAddress} = this.state
+            let obj = Object.assign(this.state.shopSubmitObj, {legalPhone: val.target.value})
+            this.setState({
+                shopSubmitObj: obj
+            })
+            this.setState({shopAddress: shopAddress})
+            if (!(/^1[0-9]{10}$/.test(val.target.value))) {
+                this.setState({legalPhoneREG: 'visible'})
+            } else {
+                this.setState({legalPhoneREG: 'hidden'})
+            }
+        }
+
+        legalIdentityChange(val) {
+            const {shopAddress} = this.state
+            let obj = Object.assign(this.state.shopSubmitObj, {legalIdentity: val.target.value})
+            this.setState({
+                shopSubmitObj: obj
+            })
+            this.setState({shopAddress: shopAddress})
+            if (!(/^\d{6}(18|19|20)\d{2}(0\d|10|11|12)([0-2]\d|30|31)\d{3}(\d|X)$/.test(val.target.value))) {
+                this.setState({legalIdentityREG: 'visible'})
+            } else {
+                this.setState({legalIdentityREG: 'hidden'})
+            }
+        }
+
+        render() {
+            console.log(this.state)
+            return (
+                <div style={{width: '100%', height: '100%'}}>
+                    {
+                        this.state.settled &&
+                        <div className="form settled">
+                            <div className="item">
+                                <p><span className="bixuan">*</span>店铺名称 <span>(30字以内)</span></p>
+                                <input type="text" name="" value={this.state.shopSubmitObj.shopName || ''}
+                                       onChange={e => this.shopNameChange(e)} placeholder="请输入店铺名称"/>
+                                <span style={{visibility: this.state.shopNameREG}}>请输入正确的店铺名称</span>
+                            </div>
+                            <div className="item" style={{width: '55%', float: 'left', marginRight: '1rem'}}>
+                                <p><span className="bixuan">*</span>申请人姓名</p>
+                                <input type="text" name="" value={this.state.shopSubmitObj.managerName || ''}
+                                       onChange={e => this.nameChange(e)} placeholder="请输入申请人姓名"/>
+                                <span style={{visibility: this.state.nameREG}}>请输入正确的申请人姓名</span>
+                            </div>
+                            <div className="item"
+                                 style={{width: 'calc(45% - 1rem)', float: 'left', marginRight: '0rem'}}>
+                                <p><span className="bixuan">*</span>联系电话</p>
+                                <input type="text" name="" id="" value={this.state.shopSubmitObj.phone || ''}
+                                       onChange={e => this.phoneChange(e)} placeholder="请输入联系电话"/>
+                                <span style={{visibility: this.state.phoneREG}}>请输入正确的联系电话</span>
+                            </div>
+                            <div className="clear"></div>
+                            <div className="item">
+                                <p><span className="bixuan">*</span>店铺简介<span>(300字以内)</span></p>
+                                <textarea name="" rows="5" cols="" value={this.state.shopSubmitObj.shopDescribe || ''}
+                                          onChange={e => this.shopDescribeChange(e)} placeholder="请输入店铺简介"></textarea>
+                                <span style={{visibility: this.state.shopDescribeREG}}>请输入正确的店铺简介</span>
+                            </div>
+                            <div className="item">
+                                <p><span className="bixuan">*</span>店铺地址</p>
+                                <div className="sedAddress"
+                                     onClick={this.sedAddress}>{this.state.shopAddress == '' ?
+                                    <span>省/市/区</span> : this.state.shopAddress}
+                                    {this.state.shopAddress == '' ?
+                                        <img className="xuanzhe" src="https://qiniuscd.yxcsx.com/jinru.png"/> :
+                                        <img className="xuanzhe1" src="https://qiniuscd.yxcsx.com/you.png"/>}
+                                </div>
+                                <span style={{visibility: this.state.locationREG}}>请选择店铺地址</span>
+                            </div>
+                            <div className="item">
+                                <p><span className="bixuan">*</span>详细地址</p>
+                                <input type="text" name="" id="" placeholder="请输入店铺所在的详细地址"
+                                       value={this.state.shopSubmitObj.shopSite || ''}
+                                       onChange={e => this.shopSiteChange(e)}/>
+                                <span style={{visibility: this.state.shopSiteREG}}>请输入门店所在街道单元详细地址</span>
+                            </div>
+                            <div className="item">
+                                <p><span className="bixuan">*</span>门店大小 <span>(单位：m²)</span></p>
+                                <input type="text" name="" id="" placeholder="例: 200"
+                                       value={this.state.shopSubmitObj.shopSize || ''}
+                                       onChange={e => this.shopSizeChange(e)}/>
+                                <span style={{visibility: this.state.shopSizeREG}}>请输入正确的门店大小(6位数以内)</span>
+                            </div>
+                            <div className="item">
+                                <p>经营执照</p>
+                                <div className="item_img" onClick={e => this.img0Click(0)}>
+                                    <span className="tishi"><span className="bixuan">*</span>门店营业执照</span>
+                                    {
+                                        this.state.onChangeImg0 != '' &&
+                                        <img id="preview0"
+                                             src={this.state.onChangeImg0 ? this.state.onChangeImg0 : ''}
+                                             style={{display: this.state.onChangeImg0 ? 'block' : 'none'}}/>
+                                    }
+                                </div>
+                                <div className="item_img" style={{marginRight: 0}} onClick={e => this.img0Click(1)}>
+                                    <span className="tishi">食品安全许可证</span>
+                                    <img id="preview1" src={this.state.onChangeImg1 ? this.state.onChangeImg1 : ''}
+                                         style={{display: this.state.onChangeImg1 ? 'block' : 'none'}}/>
+                                </div>
+                                <div className="clear"></div>
+                                <input type="file" name="" id="img0" value="" className="file"
+                                       accept="image/jpeg,image/png" onChange={this.setImagePreview}/>
+                                <input type="file" name="" id="img1" value="" className="file"
+                                       accept="image/jpeg,image/png" onChange={this.setImagePreview}/>
+                            </div>
+                            <div className="item">
+                                <p>门店图片</p>
+                                <div className="item_img" onClick={e => this.img0Click(2)}>
+                                    <span className="tishi"><span className="bixuan">*</span>门店门头图片</span>
+                                    <img id="preview2" src={this.state.onChangeImg2 ? this.state.onChangeImg2 : ''}
+                                         style={{display: this.state.onChangeImg2 ? 'block' : 'none'}}/>
+                                </div>
+                                <div className="clear"></div>
+                                <input type="file" name="" id="img2" value="" className="file"
+                                       accept="image/jpeg,image/png" onChange={this.setImagePreview}/>
+                            </div>
+                            <div className="item" style={{width: '55%', float: 'left', marginRight: '1rem'}}>
+                                <p><span className="bixuan">*</span>法人姓名</p>
+                                <input type="text" name="" id="" value={this.state.shopSubmitObj.legalName || ''}
+                                       onChange={e => this.legalNameChange(e)} placeholder="输入法人姓名"/>
+                                <span style={{visibility: this.state.legalNameREG}}>请输入正确的法人姓名</span>
+                            </div>
+                            <div className="item"
+                                 style={{width: 'calc(45% - 1rem)', float: 'left', marginRight: '0'}}>
+                                <p><span className="bixuan">*</span>法人手机号</p>
+                                <input type="text" name="" id="" value={this.state.shopSubmitObj.legalPhone || ''}
+                                       onChange={e => this.legalPhoneChange(e)} placeholder="输入法人手机号"/>
+                                <span style={{visibility: this.state.legalPhoneREG}}>请输入正确的法人手机号</span>
+                            </div>
+                            <div className="clear"></div>
+                            <div className="item">
+                                <p><span className="bixuan">*</span>法人身份证号</p>
+                                <input type="text" name="" id="" value={this.state.shopSubmitObj.legalIdentity || ''}
+                                       onChange={e => this.legalIdentityChange(e)} placeholder="输入法人身份证号"/>
+                                <span style={{visibility: this.state.legalIdentityREG}}>请输入正确的法人身份证号</span>
+                            </div>
+                            <div className="item">
+                                <p>身份图片</p>
+                                <div className="item_img" onClick={e => this.img0Click(4)}>
+                                    <span className="tishi"><span className="bixuan">*</span>身份证正面</span>
+                                    <img id="preview4" src={this.state.onChangeImg4 ? this.state.onChangeImg4 : ''}
+                                         style={{display: this.state.onChangeImg4 ? 'block' : 'none'}}/>
+                                </div>
+                                <div className="item_img" style={{marginRight: 0}} onClick={e => this.img0Click(5)}>
+                                    <span className="tishi"><span className="bixuan">*</span>身份证背面</span>
+                                    <img id="preview5" src={this.state.onChangeImg5 ? this.state.onChangeImg5 : ''}
+                                         style={{display: this.state.onChangeImg5 ? 'block' : 'none'}}/>
+                                </div>
+                                <div className="clear"></div>
+                                <input type="file" name="" id="img4" value="" className="file"
+                                       accept="image/jpeg,image/png" onChange={this.setImagePreview}/>
+                                <input type="file" name="" id="img5" value="" className="file"
+                                       accept="image/jpeg,image/png" onChange={this.setImagePreview}/>
+                            </div>
+                            <button className="btn" id="sub" onClick={this.handleOk}>提交</button>
+                        </div>
+                    }
+                    {
+                        this.state.inaudit &&
+                        <div className="inaudit">
+                            <div className="cent">
+                                <img src="https://qiniuscd.yxcsx.com/sh_img1.png"/>
+                                <p>审核中...</p>
+                            </div>
+                        </div>
+                    }
+                    {
+                        this.state.inaudits &&
+                        <div className="inaudits">
+                            <div className="cent">
+                                <img src="https://qiniuscd.yxcsx.com/sh_img2.png"/>
+                                <p>审核失败</p>
+                                <button className="">重新申请</button>
+                            </div>
+                        </div>
+                    }
+                    {
+                        this.state.inauditsuccess &&
+                        <div className="inauditsuccess">
+                            <div className="cent">
+                                <img src="https://qiniuscd.yxcsx.com/sh_img3.png"/>
+                                <p>您的商家账号已经注册</p>
+                                <button className="">去下载</button>
+                            </div>
+                        </div>
+                    }
+                    {
+                        this.state.layer &&
+                        <div className="layer">{this.state.msg}</div>
+                    }
+                    {
+                        this.state.imgIi &&
+                        <div className="bj" id="bj">
+                            <div style={{position: 'relative', height: '100%'}}>
+                                <div className="select">
+                                    <ul className="fileul">
+                                        <li id="camera" onClick={this.camera}>拍照</li>
+                                    </ul>
+                                    <div className="close" onClick={e => this.setState({imgIi: false})}>取消</div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    {
+                        this.state.loading &&
+                        <div className="bjloaling">
+                            <div style={{position: 'relative', height: '100%'}}>
+                                <div className="loaling">
+                                    <img src="https://qiniuscd.yxcsx.com/lealing.gif"/>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            );
+        }
+    }
+
+    ReactDOM.render(
+        <Toggle/>,
+        document.getElementById('example')
+    );
+
+
+</script>
+
+</body>
+
+</html>

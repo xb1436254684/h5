@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>岗位求职</title>
+		<script type="text/javascript" src="http://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+	</head>
+	<style type="text/css">
+		*{padding: 0;margin: 0;box-sizing: border-box;}
+		body{font: 16px/150% "Microsoft YaHei", "微软雅黑"; color: #222; -webkit-font-smoothing: antialiased;padding-top: 2rem;}
+		body,html{-webkit-overflow-scrolling: touch;overflow-scrolling: touch;width: 100%;height: 100%;background: #f8f8f8;}
+		ul{list-style: none;overflow: hidden;}
+		a{text-decoration: none;color: #000000;}
+		ol{display: block; list-style-type: decimal;}
+		i{font-style: normal;}
+		html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6{ -webkit-text-size-adjust: 100%;}
+		*{-webkit-tap-highlight-color: rgba(255, 255, 255, 0);}
+		input,textarea{outline: none}
+		textarea{resize: none}
+		button{cursor: pointer;}
+		button:focus{outline: 0;}
+		.clear{clear: both;}
+		body{background: rgba(246, 246, 246, 1);}
+		.cooperation_ul{background: #ffffff;padding: 0 0.5rem;}
+		.cooperation_ul li{line-height: 4rem;height: 4rem;}
+		.cooperation_ul li:nth-of-type(2){border-bottom: 0.05rem solid rgba(236, 236, 236, 1);}
+		.cooperation_ul li .icon{width: 1.5rem;vertical-align: middle;margin-top: -0.2rem;margin-right: 0.5rem;}
+		.cooperation_ul li .tall{float: right;border-radius: 1rem;background: rgba(112, 191, 42, 1);color: #ffffff;padding: 0 1rem;height: 2rem;margin: 1rem 0;line-height: 2rem;}
+
+	</style>
+
+	<body>
+		<div class="cooperation">
+			<ul class="cooperation_ul">
+				<!--<li><img src="http://qiniuscd.yxcsx.com/icon.png" class="icon" />我想成为跑跑配送<span class="tall">拨号</span></li>
+				<li><img src="http://qiniuscd.yxcsx.com/icon.png" class="icon" />我想成为法务人员<span class="tall">拨号</span></li>
+				<li><img src="http://qiniuscd.yxcsx.com/icon.png" class="icon" />我想成为市场人员<span class="tall">拨号</span></li>
+				<li><img src="http://qiniuscd.yxcsx.com/icon.png" class="icon" />我想成为投融资人员<span class="tall">拨号</span></li>-->
+			</ul>
+		</div>
+	</body>
+	<script>
+		function layer(msg) {
+			$(".layer").show()
+			$(".layer").text(msg)
+			setTimeout(function() {
+				$(".layer").hide()
+			}, 1000)
+		}
+
+		//		let IP = 'http://csapi.yxcsx.com'
+		let IP = '//192.168.1.120:9999'
+		let auth = 'Basic youshetong:youxiaocai'
+		//		let IP = 'https://api.yxcsx.com'
+		$(function() {
+			$.ajax({
+				type: "GET",
+				url: IP + '/user-proxy/companyPhone/getPhoneMenuPage',
+				data: {
+					client: 1,
+					parent: 2,
+				},
+				dataType: "json",
+				beforeSend: function(XMLHttpRequest) {
+					XMLHttpRequest.setRequestHeader("auth", auth);
+				},
+				success: function(res) {
+					if(res.code == 0) {
+						console.log(res.data.records)
+						let data = res.data.records
+						$(".cooperation_ul").empty();
+						for(var i in data) {
+							$(".cooperation_ul").append('<li class="button' + data[i].priority + '" phone=' + data[i].phone + '><img src="http://qiniuscd.yxcsx.com/icon.png" class="icon"/>' + data[i].title + '<span class="tall">拨号</span></li>')
+						}
+					} else {
+						layer(res.msg)
+					}
+				},
+				error: function(err) {
+					layer('接口错误:' + err.status)
+					console.log(err)
+				}
+			});
+		})
+
+		// 判断设备为 ios
+		function isIos() {
+			var u = navigator.userAgent;
+			if(u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+				return true;
+			}
+			return false;
+		}
+
+		function ios() {
+			function setupWebViewJavascriptBridge(callback) {
+				if(window.WebViewJavascriptBridge) {
+					return callback(WebViewJavascriptBridge);
+				}
+				if(window.WVJBCallbacks) {
+					return window.WVJBCallbacks.push(callback);
+				}
+				window.WVJBCallbacks = [callback];
+				var WVJBIframe = document.createElement('iframe');
+				WVJBIframe.style.display = 'none';
+				WVJBIframe.src = 'https://__bridge_loaded__';
+				document.documentElement.appendChild(WVJBIframe);
+				setTimeout(function() {
+					document.documentElement.removeChild(WVJBIframe)
+				}, 0)
+			}
+
+			setupWebViewJavascriptBridge(function(bridge) {
+				$(".viewport").on('click', ' button0', function(e) {
+					var phone = $(this).attr('phone')
+					e.preventDefault()
+					bridge.callHandler('getMobile', phone, function(response) {})
+				})
+				$(".viewport").on('click', ' button1', function(e) {
+					e.preventDefault()
+					var phone = $(this).attr('phone')
+					bridge.callHandler('getMobile', phone, function(response) {})
+				})
+				$(".viewport").on('click', ' button2', function(e) {
+					e.preventDefault()
+					var phone = $(this).attr('phone')
+					bridge.callHandler('getMobile', phone, function(response) {})
+				})
+				$(".viewport").on('click', ' button3', function(e) {
+					e.preventDefault()
+					var phone = $(this).attr('phone')
+					bridge.callHandler('getMobile', phone, function(response) {})
+				})
+			})
+		}
+
+		function android() {
+			$(".viewport").on('click', ' button0', function(e) {
+				e.preventDefault()
+				var phone = $(this).attr('phone')
+				window.android.getMobile(phone)
+			})
+			$(".viewport").on('click', ' button1', function(e) {
+				e.preventDefault()
+				var phone = $(this).attr('phone')
+				window.android.getMobile(phone)
+			})
+			$(".viewport").on('click', ' button2', function(e) {
+				e.preventDefault()
+				var phone = $(this).attr('phone')
+				window.android.getMobile(phone)
+			})
+			$(".viewport").on('click', ' button3', function(e) {
+				e.preventDefault()
+				var phone = $(this).attr('phone')
+				window.android.getMobile(phone)
+			})
+		}
+
+		isIos() ? ios() : android()
+	</script>
+
+</html>

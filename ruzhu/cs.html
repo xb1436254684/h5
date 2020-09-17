@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>门店分布</title>
+</head>
+<style>
+    * {padding: 0;margin: 0;box-sizing: border-box;}
+    body {font: 16px/150% "Microsoft YaHei", "微软雅黑"; color: #222; -webkit-font-smoothing: antialiased;}
+    body, html {-webkit-overflow-scrolling: touch;overflow-scrolling: touch;width: 100%;}
+    ul {list-style: none;overflow: hidden;}
+    a {text-decoration: none;color: #000000;}
+    ol {display: block; list-style-type: decimal;}
+    i {font-style: normal;}
+    .clear {clear: both;}
+    html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 { -webkit-text-size-adjust: 100%;}
+    .img {width: 100%;display: block}
+    .province_list {position: fixed;bottom: 0;left: 0;width: 100%;height: 40%;z-index: 10}
+    .province_list .title {padding: 0 1rem;color: #35383F;font-size: 0.8rem}
+    .province_list .title span {padding: 0.25rem;display: inline-block;background: #70BF2A;margin: 0 0.2rem}
+    .province_list .title span:nth-of-type(2) {background: #96CD69;}
+    .province_list .title span:nth-of-type(3) {background: #D8E4CE;}
+    .province_list .title span:nth-of-type(4) {background: #ECF1E8;}
+    .province_list ul {padding: 1rem;overflow: hidden;overflow-y: auto;height: calc(100% - 2rem)}
+    .province_list ul li {float: left;width: calc(100% / 3);text-align: center;margin: 1rem 0;color: #35383F}
+    .province_list ul .sed {color: #70BF2A}
+    .city {position: fixed;bottom: 0;left: 0;width: 100%;height: 80%;z-index: 100;background: rgba(255, 255, 255, 0.8);padding: 1rem;padding-top: 0;display: none}
+    .city .title {font-weight: 700;padding: 1rem;background: #ffffff}
+    .city .title img {width: 1.5rem;vertical-align: middle;float: right}
+    .main_title {background: #F4F7F2;padding: 1rem 0.5rem;color: #70BF2A}
+    .main_title img {width: 1.5rem;vertical-align: middle;margin-top: -0.1rem}
+    .right {float: right;border-left: 0.1rem solid #70BF2A;padding-left: 1rem;height: 1.2rem;line-height: 1.2rem;margin-top: 0.2rem}
+    .city ul{height: calc(100% - 6rem);overflow: hidden;overflow-y: auto}
+    .city ul span{float: right}
+    .city ul li{padding: 0.5rem}
+</style>
+
+<body>
+<img src="../img/map.png" class="img" alt="">
+<div class="province_list">
+    <div class="title">
+        <span></span><span></span><span></span><span></span>
+        <p>门店覆盖区域</p>
+    </div>
+    <ul>
+        <div class="clear"></div>
+    </ul>
+</div>
+<div class="city">
+    <div class="title"><span>省市地区</span><img src="../img/close.png" alt=""/></div>
+    <div class="main_title">
+        <img src="../img/weizi.png" alt=""><span class="sheng"></span><span class="right"><img src="../img/shop.png" alt=""> <span class="num">1682</span>个</span>
+        <div class="clear"></div>
+    </div>
+    <ul>
+    </ul>
+</div>
+</body>
+<script src="../js/jquery-3.2.1.min.js"></script>
+<script>
+    let arr = [
+        {
+            "province": "贵州省",
+            "name": "贵阳市",
+            "num": "412",
+        },
+        {
+            "province": "贵州省",
+            "name": "六盘水市",
+            "num": "223",
+        },
+        {
+            "province": "贵州省",
+            "name": "安顺市",
+            "num": "150",
+        },
+        {
+            "province": "贵州省",
+            "name": "遵义市",
+            "num": "120",
+        },
+        {
+            "province": "贵州省",
+            "name": "毕节市",
+            "num": "334",
+        },
+        {
+            "province": "贵州省",
+            "name": "铜仁市",
+            "num": "191",
+        },
+        {
+            "province": "贵州省",
+            "name": "清镇市",
+            "num": "246",
+        },
+        {
+            "province": "贵州省",
+            "name": "赤水市",
+            "num": "180",
+        },
+        {
+            "province": "贵州省",
+            "name": "仁怀市",
+            "num": "234",
+        },
+        {
+            "province": "贵州省",
+            "name": "兴义市",
+            "num": "246",
+        },
+        {
+            "province": "贵州省",
+            "name": "凯里市",
+            "num": "302",
+        },
+        {
+            "province": "贵州省",
+            "name": "都匀市",
+            "num": "211",
+        },
+        {
+            "province": "贵州省",
+            "name": "福泉市",
+            "num": "102",
+        },
+        {
+            "province": "四川省",
+            "name": "成都市",
+            "num": "20",
+        },
+        {
+            "province": "四川省",
+            "name": "自贡市",
+            "num": "3",
+        },
+        {
+            "province": "四川省",
+            "name": "攀枝花市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "泸州市",
+            "num": "1",
+        },
+        {
+            "province": "四川省",
+            "name": "德阳市",
+            "num": "3",
+        },
+        {
+            "province": "四川省",
+            "name": "绵阳市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "广元市",
+            "num": "1",
+        },
+        {
+            "province": "四川省",
+            "name": "遂宁市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "内江市",
+            "num": "1",
+        },
+        {
+            "province": "四川省",
+            "name": "乐山市",
+            "num": "3",
+        },
+        {
+            "province": "四川省",
+            "name": "南充市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "眉山市",
+            "num": "1",
+        },
+        {
+            "province": "四川省",
+            "name": "宜宾市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "广安市",
+            "num": "3",
+        },
+        {
+            "province": "四川省",
+            "name": "达州市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "雅安市",
+            "num": "1",
+        },
+        {
+            "province": "四川省",
+            "name": "巴中市",
+            "num": "1",
+        },
+        {
+            "province": "四川省",
+            "name": "资阳市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "都江堰市",
+            "num": "3",
+        },
+        {
+            "province": "四川省",
+            "name": "彭州市",
+            "num": "1",
+        },
+        {
+            "province": "四川省",
+            "name": "邛崃市",
+            "num": "1",
+        },
+        {
+            "province": "四川省",
+            "name": "崇州市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "简阳市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "广汉市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "什邡市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "绵竹市",
+            "num": "4",
+        },
+        {
+            "province": "四川省",
+            "name": "江油市",
+            "num": "3",
+        },
+        {
+            "province": "四川省",
+            "name": "峨眉山市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "阆中市",
+            "num": "1",
+        },
+        {
+            "province": "四川省",
+            "name": "华蓥市",
+            "num": "2",
+        },
+        {
+            "province": "四川省",
+            "name": "万源市",
+            "num": "1",
+        },
+        {
+            "province": "四川省",
+            "name": "马尔康市",
+            "num": "4",
+        },
+        {
+            "province": "四川省",
+            "name": "康定市",
+            "num": "3",
+        },
+        {
+            "province": "四川省",
+            "name": "西昌市",
+            "num": "4",
+        },
+        {
+            "province": "浙江省",
+            "name": "杭州市",
+            "num": "3",
+        },
+        {
+            "province": "浙江省",
+            "name": "宁波市",
+            "num": "2",
+        },
+        {
+            "province": "浙江省",
+            "name": "温州市",
+            "num": "1",
+        },
+        {
+            "province": "浙江省",
+            "name": "嘉兴市",
+            "num": "1",
+        },
+        {
+            "province": "浙江省",
+            "name": "湖州市",
+            "num": "1",
+        },
+        {
+            "province": "浙江省",
+            "name": "绍兴市",
+            "num": "3",
+        },
+        {
+            "province": "浙江省",
+            "name": "金华市",
+            "num": "2",
+        },
+        {
+            "province": "浙江省",
+            "name": "衢州市",
+            "num": "2",
+        },
+        {
+            "province": "浙江省",
+            "name": "舟山市",
+            "num": "1",
+        },
+        {
+            "province": "浙江省",
+            "name": "台州市",
+            "num": "5",
+        },
+        {
+            "province": "浙江省",
+            "name": "丽水市",
+            "num": "2",
+        },
+        {
+            "province": "浙江省",
+            "name": "建德市",
+            "num": "2",
+        },
+        {
+            "province": "浙江省",
+            "name": "余姚市",
+            "num": "1",
+        },
+        {
+            "province": "浙江省",
+            "name": "慈溪市",
+            "num": "2",
+        },
+        {
+            "province": "浙江省",
+            "name": "奉化市",
+            "num": "5",
+        },
+        {
+            "province": "浙江省",
+            "name": "瑞安市",
+            "num": "4",
+        },
+        {
+            "province": "浙江省",
+            "name": "乐清市",
+            "num": "3",
+        },
+        {
+            "province": "浙江省",
+            "name": "海宁市",
+            "num": "2",
+        },
+        {
+            "province": "浙江省",
+            "name": "平湖市",
+            "num": "1",
+        },
+        {
+            "province": "浙江省",
+            "name": "桐乡市",
+            "num": "2",
+        },
+        {
+            "province": "浙江省",
+            "name": "诸暨市",
+            "num": "4",
+        },
+        {
+            "province": "浙江省",
+            "name": "嵊州市",
+            "num": "1",
+        },
+        {
+            "province": "浙江省",
+            "name": "兰溪市",
+            "num": "2",
+        },
+        {
+            "province": "浙江省",
+            "name": "义乌市",
+            "num": "3",
+        },
+        {
+            "province": "浙江省",
+            "name": "东阳市",
+            "num": "1",
+        },
+        {
+            "province": "浙江省",
+            "name": "永康市",
+            "num": "2",
+        },
+        {
+            "province": "浙江省",
+            "name": "江山市",
+            "num": "1",
+        },
+        {
+            "province": "浙江省",
+            "name": "温岭市",
+            "num": "4",
+        },
+        {
+            "province": "浙江省",
+            "name": "临海市",
+            "num": "3",
+        },
+        {
+            "province": "浙江省",
+            "name": "龙泉市",
+            "num": "1",
+        },
+        {
+            "province": "浙江省",
+            "name": "江山市",
+            "num": "3",
+        },
+        {
+            "province": "重庆市",
+            "name": "重庆市",
+            "num": "122",
+        },
+        {
+            "province": "广东省",
+            "name": "广州市",
+            "num": "15",
+        },
+        {
+            "province": "广东省",
+            "name": "韶关市",
+            "num": "4",
+        },
+        {
+            "province": "广东省",
+            "name": "深圳市",
+            "num": "3",
+        },
+        {
+            "province": "广东省",
+            "name": "珠海市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "汕头市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "佛山市",
+            "num": "1",
+        },
+        {
+            "province": "广东省",
+            "name": "江门市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "湛江市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "茂名市",
+            "num": "3",
+        },
+        {
+            "province": "广东省",
+            "name": "肇庆市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "惠州市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "梅州市",
+            "num": "1",
+        },
+        {
+            "province": "广东省",
+            "name": "汕尾市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "河源市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "阳江市",
+            "num": "1",
+        },
+        {
+            "province": "广东省",
+            "name": "清远市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "东莞市",
+            "num": "8",
+        },
+        {
+            "province": "广东省",
+            "name": "中山市",
+            "num": "1",
+        },
+        {
+            "province": "广东省",
+            "name": "潮州市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "揭阳市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "云浮市",
+            "num": "3",
+        },
+        {
+            "province": "广东省",
+            "name": "乐昌市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "南雄市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "台山市",
+            "num": "1",
+        },
+        {
+            "province": "广东省",
+            "name": "开平市",
+            "num": "3",
+        },
+        {
+            "province": "广东省",
+            "name": "鹤山市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "恩平市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "廉江市",
+            "num": "1",
+        },
+        {
+            "province": "广东省",
+            "name": "雷州市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "吴川市",
+            "num": "1",
+        },
+        {
+            "province": "广东省",
+            "name": "高州市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "化州市",
+            "num": "1",
+        },
+        {
+            "province": "广东省",
+            "name": "信宜市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "四会市",
+            "num": "3",
+        },
+        {
+            "province": "广东省",
+            "name": "兴宁市",
+            "num": "1",
+        },
+        {
+            "province": "广东省",
+            "name": "陆丰市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "阳春市",
+            "num": "3",
+        },
+        {
+            "province": "广东省",
+            "name": "英德市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "连州市",
+            "num": "1",
+        },
+        {
+            "province": "广东省",
+            "name": "普宁市",
+            "num": "2",
+        },
+        {
+            "province": "广东省",
+            "name": "罗定市",
+            "num": "2",
+        },
+        {
+            "province": "云南省",
+            "name": "昆明市",
+            "num": "11",
+        },
+        {
+            "province": "云南省",
+            "name": "曲靖市",
+            "num": "2",
+        },
+        {
+            "province": "云南省",
+            "name": "玉溪市",
+            "num": "1",
+        },
+        {
+            "province": "云南省",
+            "name": "保山市",
+            "num": "3",
+        },
+        {
+            "province": "云南省",
+            "name": "昭通市",
+            "num": "2",
+        },
+        {
+            "province": "云南省",
+            "name": "丽江市",
+            "num": "2",
+        },
+        {
+            "province": "云南省",
+            "name": "普洱市",
+            "num": "2",
+        },
+        {
+            "province": "云南省",
+            "name": "临沧市",
+            "num": "1",
+        },
+        {
+            "province": "云南省",
+            "name": "安宁市",
+            "num": "4",
+        },
+        {
+            "province": "云南省",
+            "name": "宣威市",
+            "num": "1",
+        },
+        {
+            "province": "云南省",
+            "name": "腾冲市",
+            "num": "2",
+        },
+        {
+            "province": "云南省",
+            "name": "楚雄市",
+            "num": "3",
+        },
+        {
+            "province": "云南省",
+            "name": "个旧市",
+            "num": "1",
+        },
+        {
+            "province": "云南省",
+            "name": "开远市",
+            "num": "1",
+        },
+        {
+            "province": "云南省",
+            "name": "蒙自市",
+            "num": "3",
+        },
+        {
+            "province": "云南省",
+            "name": "弥勒市",
+            "num": "2",
+        },
+        {
+            "province": "云南省",
+            "name": "文山市",
+            "num": "2",
+        },
+        {
+            "province": "云南省",
+            "name": "景洪市",
+            "num": "1",
+        },
+        {
+            "province": "云南省",
+            "name": "大理市",
+            "num": "1",
+        },
+        {
+            "province": "云南省",
+            "name": "瑞丽市",
+            "num": "3",
+        },
+        {
+            "province": "云南省",
+            "name": "芒市",
+            "num": "1",
+        },
+        {
+            "province": "云南省",
+            "name": "香格里拉市",
+            "num": "3",
+        },
+        {
+            "province": "陕西省",
+            "name": "西安市",
+            "num": "1",
+        },
+        {
+            "province": "陕西省",
+            "name": "铜川市",
+            "num": "2",
+        },
+        {
+            "province": "陕西省",
+            "name": "宝鸡市",
+            "num": "2",
+        },
+        {
+            "province": "陕西省",
+            "name": "咸阳市",
+            "num": "1",
+        },
+        {
+            "province": "陕西省",
+            "name": "渭南市",
+            "num": "3",
+        },
+        {
+            "province": "陕西省",
+            "name": "延安市",
+            "num": "3",
+        },
+        {
+            "province": "陕西省",
+            "name": "汉中市",
+            "num": "2",
+        },
+        {
+            "province": "陕西省",
+            "name": "榆林市",
+            "num": "1",
+        },
+        {
+            "province": "陕西省",
+            "name": "安康市",
+            "num": "1",
+        },
+        {
+            "province": "陕西省",
+            "name": "商洛市",
+            "num": "1",
+        },
+        {
+            "province": "陕西省",
+            "name": "兴平市",
+            "num": "3",
+        },
+        {
+            "province": "陕西省",
+            "name": "韩城市",
+            "num": "2",
+        },
+        {
+            "province": "陕西省",
+            "name": "华阴市",
+            "num": "2",
+        },
+        {
+            "province": "山东省",
+            "name": "济南市",
+            "num": "5",
+        },
+        {
+            "province": "山东省",
+            "name": "青岛市",
+            "num": "2",
+        },
+        {
+            "province": "山东省",
+            "name": "淄博市",
+            "num": "2",
+        },
+        {
+            "province": "山东省",
+            "name": "枣庄市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "东营市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "烟台市",
+            "num": "3",
+        },
+        {
+            "province": "山东省",
+            "name": "潍坊市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "济宁市",
+            "num": "2",
+        },
+        {
+            "province": "山东省",
+            "name": "泰安市",
+            "num": "3",
+        },
+        {
+            "province": "山东省",
+            "name": "威海市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "日照市",
+            "num": "2",
+        },
+        {
+            "province": "山东省",
+            "name": "临沂市",
+            "num": "2",
+        },
+        {
+            "province": "山东省",
+            "name": "德州市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "聊城市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "滨州市",
+            "num": "3",
+        },
+        {
+            "province": "山东省",
+            "name": "菏泽市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "章丘市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "胶州市",
+            "num": "3",
+        },
+        {
+            "province": "山东省",
+            "name": "即墨市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "平度市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "莱西市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "滕州市",
+            "num": "2",
+        },
+        {
+            "province": "山东省",
+            "name": "龙口市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "莱阳市",
+            "num": "2",
+        },
+        {
+            "province": "山东省",
+            "name": "莱州市",
+            "num": "2",
+        },
+        {
+            "province": "山东省",
+            "name": "蓬莱市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "招远市",
+            "num": "2",
+        },
+        {
+            "province": "山东省",
+            "name": "栖霞市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "海阳市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "青州市",
+            "num": "2",
+        },
+        {
+            "province": "山东省",
+            "name": "诸城市",
+            "num": "4",
+        },
+        {
+            "province": "山东省",
+            "name": "寿光市",
+            "num": "3",
+        },
+        {
+            "province": "山东省",
+            "name": "安丘市",
+            "num": "2",
+        },
+        {
+            "province": "山东省",
+            "name": "高密市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "昌邑市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "曲阜市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "邹城市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "新泰市",
+            "num": "3",
+        },
+        {
+            "province": "山东省",
+            "name": "肥城市",
+            "num": "5",
+        },
+        {
+            "province": "山东省",
+            "name": "荣成市",
+            "num": "4",
+        },
+        {
+            "province": "山东省",
+            "name": "乳山市",
+            "num": "3",
+        },
+        {
+            "province": "山东省",
+            "name": "乐陵市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "禹城市",
+            "num": "1",
+        },
+        {
+            "province": "山东省",
+            "name": "临清市",
+            "num": "2",
+        },
+        {
+            "province": "安徽省",
+            "name": "合肥市",
+            "num": "5",
+        },
+        {
+            "province": "安徽省",
+            "name": "芜湖市",
+            "num": "2",
+        },
+        {
+            "province": "安徽省",
+            "name": "蚌埠市",
+            "num": "1",
+        },
+        {
+            "province": "安徽省",
+            "name": "淮南市",
+            "num": "3",
+        },
+        {
+            "province": "安徽省",
+            "name": "马鞍山市",
+            "num": "1",
+        },
+        {
+            "province": "安徽省",
+            "name": "淮北市",
+            "num": "2",
+        },
+        {
+            "province": "安徽省",
+            "name": "铜陵市",
+            "num": "1",
+        },
+        {
+            "province": "安徽省",
+            "name": "安庆市",
+            "num": "1",
+        },
+        {
+            "province": "安徽省",
+            "name": "黄山市",
+            "num": "2",
+        },
+        {
+            "province": "安徽省",
+            "name": "滁州市",
+            "num": "2",
+        },
+        {
+            "province": "安徽省",
+            "name": "阜阳市",
+            "num": "3",
+        },
+        {
+            "province": "安徽省",
+            "name": "宿州市",
+            "num": "2",
+        },
+        {
+            "province": "安徽省",
+            "name": "六安市",
+            "num": "1",
+        },
+        {
+            "province": "安徽省",
+            "name": "亳州市",
+            "num": "1",
+        },
+        {
+            "province": "安徽省",
+            "name": "池州市",
+            "num": "1",
+        },
+        {
+            "province": "安徽省",
+            "name": "宣城市",
+            "num": "4",
+        },
+        {
+            "province": "安徽省",
+            "name": "巢湖市",
+            "num": "3",
+        },
+        {
+            "province": "安徽省",
+            "name": "桐城市",
+            "num": "1",
+        },
+        {
+            "province": "安徽省",
+            "name": "天长市",
+            "num": "3",
+        },
+        {
+            "province": "安徽省",
+            "name": "明光市",
+            "num": "2",
+        },
+        {
+            "province": "安徽省",
+            "name": "界首市",
+            "num": "1",
+        },
+        {
+            "province": "安徽省",
+            "name": "宁国市",
+            "num": "2",
+        },
+        {
+            "province": "湖南省",
+            "name": "长沙市",
+            "num": "10",
+        },
+        {
+            "province": "湖南省",
+            "name": "株洲市",
+            "num": "1",
+        },
+        {
+            "province": "湖南省",
+            "name": "湘潭市",
+            "num": "1",
+        },
+        {
+            "province": "湖南省",
+            "name": "衡阳市",
+            "num": "2",
+        },
+        {
+            "province": "湖南省",
+            "name": "邵阳市",
+            "num": "3",
+        },
+        {
+            "province": "湖南省",
+            "name": "岳阳市",
+            "num": "1",
+        },
+        {
+            "province": "湖南省",
+            "name": "常德市",
+            "num": "2",
+        },
+        {
+            "province": "湖南省",
+            "name": "张家界市",
+            "num": "2",
+        },
+        {
+            "province": "湖南省",
+            "name": "益阳市",
+            "num": "1",
+        },
+        {
+            "province": "湖南省",
+            "name": "郴州市",
+            "num": "3",
+        },
+        {
+            "province": "湖南省",
+            "name": "永州市",
+            "num": "2",
+        },
+        {
+            "province": "湖南省",
+            "name": "怀化市",
+            "num": "1",
+        },
+        {
+            "province": "湖南省",
+            "name": "娄底市",
+            "num": "2",
+        },
+        {
+            "province": "湖南省",
+            "name": "浏阳市",
+            "num": "3",
+        },
+        {
+            "province": "湖南省",
+            "name": "醴陵市",
+            "num": "3",
+        },
+        {
+            "province": "湖南省",
+            "name": "湘乡市",
+            "num": "1",
+        },
+        {
+            "province": "湖南省",
+            "name": "韶山市",
+            "num": "2",
+        },
+        {
+            "province": "湖南省",
+            "name": "耒阳市",
+            "num": "2",
+        },
+        {
+            "province": "湖南省",
+            "name": "常宁市",
+            "num": "2",
+        },
+        {
+            "province": "湖南省",
+            "name": "武冈市",
+            "num": "1",
+        },
+        {
+            "province": "湖南省",
+            "name": "汨罗市",
+            "num": "2",
+        },
+        {
+            "province": "湖南省",
+            "name": "临湘市",
+            "num": "5",
+        },
+        {
+            "province": "湖南省",
+            "name": "津市市",
+            "num": "2",
+        },
+        {
+            "province": "湖南省",
+            "name": "沅江市",
+            "num": "1",
+        },
+        {
+            "province": "湖南省",
+            "name": "资兴市",
+            "num": "4",
+        },
+        {
+            "province": "湖南省",
+            "name": "洪江市",
+            "num": "3",
+        },
+        {
+            "province": "湖南省",
+            "name": "冷水江市",
+            "num": "1",
+        },
+        {
+            "province": "湖南省",
+            "name": "涟源市",
+            "num": "2",
+        },
+        {
+            "province": "湖南省",
+            "name": "吉首市",
+            "num": "3",
+        },
+        {
+            "province": "湖南省",
+            "name": "宁乡市",
+            "num": "2",
+        }
+    ]
+    let province = []
+    $(function () {
+        for (let i in arr) {
+            if (province.indexOf(arr[i].province)==-1) {
+                province.push(arr[i].province)
+                $(".province_list ul .clear").before('<li>'+arr[i].province+'</li>')
+            }
+        }
+        $(".province_list ul li").on('click', function () {
+            $(".province_list ul li").removeClass('sed')
+            $(this).addClass('sed')
+            $(".main_title .sheng").text($(this).text())
+            let num=0
+            for (let i in arr) {
+                if (arr[i].province==$(this).text()) {
+                    num+=Number(arr[i].num)
+                    $(".city ul").append('<li>'+arr[i].name+'<span>'+arr[i].num+'个</span></li>')
+                }
+            }
+            $(".main_title .num").text(num)
+            $(".city").show()
+        })
+        $(".city .title img").on('click', function () {
+            $(".city ul").html('')
+            $(".province_list ul li").removeClass('sed')
+            $(".city").hide()
+        })
+    })
+
+
+</script>
+</html>

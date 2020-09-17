@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>优小菜-商家端</title>
+		<script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+		<style type="text/css">
+			*{padding: 0;margin: 0;}
+			html,body{width: 100%;height: 100%;}
+			body{background: url(http://qiniuscd.yxcsx.com/bg04@3x.png) no-repeat;background-size: 100% 100%;}
+			.btn-bg{background: url(http://qiniuscd.yxcsx.com/bg01@3x.png) no-repeat;text-align: center; background-size: 100% 100%;overflow: hidden; width: 100%;height: 20rem;position: fixed;bottom: 0rem;left: 50%;transform: translateX(-50%);}
+			.btn-bg>img{width: 30%;margin-bottom: 2rem;}
+			.btn-bg a{display: inline-block;padding: 0.5rem 2rem;text-decoration: none;color: #fff;background: #86D054;border-radius: 2rem;display: none;}
+			.btn-bg a>img{width: 1.2rem;vertical-align: middle;margin-top: -0.5rem;margin-right: 0.2rem;}
+			.btn-bg p{margin-top: 1rem;letter-spacing: 0.1rem;}
+			.mubg{position: fixed;top: 0;left: 0;width: 100%;height: 100%;display: none;z-index: 10;}
+			.mubg img{width: 100%;height: 100%;}
+
+		</style>
+	</head>
+
+	<body>
+		<div class="btn-bg">
+			<img src="http://qiniuscd.yxcsx.com/appLOGO@3x.png" /><br />
+			<a href="https://apps.apple.com/cn/app/id1484317765" id="ios">
+				<img src="http://qiniuscd.yxcsx.com/ios@3x.png" /> iOS下载
+			</a>
+			<a href="javascript:void(0);" id="android">
+				<img src="http://qiniuscd.yxcsx.com/android@3x.png" />Android下载
+			</a>
+		</div>
+		<div class="mubg">
+			<img src="http://qiniuscd.yxcsx.com/mubg.png" />
+		</div>
+		<script>
+			// 判断安卓
+			function isAndroid() {
+				var u = navigator.userAgent;
+				if(u.indexOf("Android") > -1 || u.indexOf("Linux") > -1) {
+					if(window.ShowFitness !== undefined) return true;
+				}
+				return false;
+			}
+			// 判断设备为 ios
+			function isIos() {
+				var u = navigator.userAgent;
+				if(u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+					return true;
+				}
+				return false;
+			}
+
+			function ios() {
+				document.getElementById('ios').style.display = 'inline-block'
+				document.getElementById('android').style.display = 'none'
+			}
+
+			function android() {
+				document.getElementById('android').style.display = 'inline-block'
+				document.getElementById('ios').style.display = 'none'
+				is_weixin()
+			}
+			//是否在微信内打开
+			function is_weixin() {
+				var ua = navigator.userAgent.toLowerCase();
+				if(ua.match(/MicroMessenger/i) == "micromessenger") {
+					$("#android").on('click', function() {
+						$(".mubg").show()
+					})
+					return true;
+				} else {
+					$.ajax({
+						type: "get",
+						url: "https://api.yxcsx.com/user-proxy/version_update/getVersion",
+						data: {
+							client: 3
+						},
+						success: function(res) {
+							$("#android").attr("href", res.data.apkUrl)
+						}
+					});
+					return false;
+				}
+			}
+
+			isIos() ? ios() : android()
+		</script>
+	</body>
+
+</html>

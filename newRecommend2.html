@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>注册</title>
+    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+    <script type="text/javascript" src="//static.runoob.com/assets/qrcode/qrcode.min.js"></script>
+    <script src="https://cdn.bootcss.com/html2canvas/0.5.0-beta4/html2canvas.js"></script>
+</head>
+<style>
+    * {padding: 0;margin: 0;box-sizing: border-box;}
+    body, html {-webkit-overflow-scrolling: touch;overflow-scrolling: touch;width: 100%;height: 100%;background: #fff;}
+    #example, body {font: 16px/150% "Microsoft YaHei", "微软雅黑"; color: #222; -webkit-font-smoothing: antialiased;background: #fff;overflow: hidden;overflow-y: auto}
+    #example {width: 100%;height: 100%}
+    ul {list-style: none;overflow: hidden;}
+    a {text-decoration: none;color: #000000;}
+    ol {display: block; list-style-type: decimal;}
+    i {font-style: normal;}
+    html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 { -webkit-text-size-adjust: 100%;}
+    * {-webkit-tap-highlight-color: rgba(255, 255, 255, 0);}
+    input, textarea {outline: none}
+    textarea {resize: none}
+    button {cursor: pointer;}
+    button:focus {outline: 0;}
+    .clear {clear: both;}
+    .layer {position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);background: rgba(0, 0, 0, 0.5);padding: 0 1rem;height: 2rem; line-height: 2rem;color: #fff;border-radius: 0.5rem;z-index: 1000;}
+    .main {padding: 1rem;text-align: center;}
+    .main p {color: #70BF2A;font-weight: 700;font-size: 1.2rem;}
+    .main img {width: 8rem;margin: 1rem;}
+    .input {padding: 0 2rem;}
+    .input p {font-weight: 700;margin: 0.5rem 0;}
+    .input input {background: #f8f8f8;border: 0;width: 100%;height: 2.5rem;line-height: 2.5rem;border-radius: 1rem;padding: 0 1rem;}
+    .code input {width: 50%;float: left;color: #70BF2A;letter-spacing: 1rem;}
+    .code span {float: right; width: 40%;background: #70BF2A;color: #fff;display: inline-block;height: 2.5rem;line-height: 2.5rem;border-radius: 1rem;text-align: center;}
+</style>
+
+<body>
+<div id="example"></div>
+</body>
+<script type="text/babel">
+    class Toggle extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                layer: false,//提示框
+                msg: '',//提示框内容
+                phone: '',
+                code: '',
+                text: '获取验证',
+                //接口api
+                apiUrl: 'https://api.yxcsx.com',
+                // apiUrl: 'https://api.yxcsx.com',
+                stat: true,
+                userId: '',
+            }
+            this.phoneChange = this.phoneChange.bind(this);
+            this.codeChange = this.codeChange.bind(this);
+        }
+
+        componentDidMount(props) {
+            let url = window.location.search;
+            this.setState({userId: url.substring(url.lastIndexOf('=') + 1, url.length)})
+            // this.setState({userId: 'C157474098630910'})
+//          this.setState({Token: '3492c1c4f4fb453e88df258110b19107'})
+
+        }
+
+        //obj,pictureUrlObj发生改变时编辑filesImg数组
+        componentDidUpdate(nextProps, nextState) {
+            let _this = this
+            //上传的obj对象变更时添加或者修改对应的filesImg上传数组
+            if (nextState.code !== this.state.code) {
+                if (this.state.code.length == 4) {
+                    $.ajax({
+                        url: _this.state.apiUrl + '/user-proxy/user/recommendRegisterUser',
+                        type: 'post',
+                        dataType: 'json',
+                        beforeSend: function (XMLHttpRequest) {
+                            // XMLHttpRequest.setRequestHeader("token", _this.state.Token);
+                            XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                            XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                        },
+                        async: false,
+                        data: JSON.stringify({
+                            phone: _this.state.phone,
+                            code: _this.state.code,
+                            userId: _this.state.userId
+                        }),
+                        success: function (res) {
+                            if (res.code == 0) {
+                                window.location.href = 'https://qiniuscd.yxcsx.com/userdowm14d.html'
+                            } else {
+                                _this.setState({layer: true, msg: res.msg})
+                                setTimeout(function () {
+                                    _this.setState({layer: false});
+                                }.bind(this), 1000)
+                            }
+                        },
+                        error: function (e) {
+                            _this.setState({layer: true, msg: e})
+                            setTimeout(function () {
+                                _this.setState({layer: false});
+                            }.bind(this), 1000)
+                        }
+                    })
+                }
+                return false
+            }
+            return true
+        }
+
+        getCode = () => {
+            let _this = this
+            if (!(/^1[0-9]{10}$/.test(_this.state.phone))) {
+                _this.setState({layer: true, msg: '请输入正确的手机号！'})
+                setTimeout(function () {
+                    _this.setState({layer: false});
+                }.bind(this), 1000)
+                return
+            }
+            if (_this.state.stat) {
+                _this.setState({stat: false})
+                $.ajax({
+                    url: _this.state.apiUrl + '/user-proxy/user/getRecommendRegisterUserCode',
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function (XMLHttpRequest) {
+                        // XMLHttpRequest.setRequestHeader("token", _this.state.Token);
+                        XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                        XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                    },
+                    async: false,
+                    data: JSON.stringify({phone: _this.state.phone,userId:_this.state.userId}),
+                    success: function (res) {
+                        if (res.code == 0) {
+                            let second = 61
+                            let setv = setInterval(function () {
+                                second -= 1;
+                                if (second > 0) {
+                                    _this.setState({text: second + 's'})
+                                } else {
+                                    second = 61;
+                                    clearInterval(setv);
+                                    _this.setState({text: '获取验证码', stat: true})
+                                }
+                            }.bind(this), 1000)
+                        } else {
+                            _this.setState({layer: true, msg: res.msg, stat: true})
+                            setTimeout(function () {
+                                _this.setState({layer: false});
+                            }.bind(this), 1000)
+                        }
+                    },
+                    error: function (e) {
+                        _this.setState({layer: true, msg: e})
+                        setTimeout(function () {
+                            _this.setState({layer: false});
+                        }.bind(this), 1000)
+                    }
+                })
+            }
+
+        }
+        phoneChange = (val) => {
+            this.setState({phone: val.target.value})
+        }
+        codeChange = (val) => {
+            this.setState({code: val.target.value})
+        }
+
+        render() {
+            return (
+                <div style={{width: '100%', height: '100%'}}>
+                    {
+                        this.state.layer &&
+                        <div className="layer">{this.state.msg}</div>
+                    }
+                    <div className="main">
+                        <img src="https://qiniuscd.yxcsx.com/logo.png"/>
+                        <p>买菜就上优小菜 / 30分钟到家快</p>
+                    </div>
+                    <div className="input phone">
+                        <p>手机号</p>
+                        <input type="text" placeholder="输入手机号" value={this.state.phone || ''}
+                               onChange={e => this.phoneChange(e)}/>
+                    </div>
+                    <div className="input code">
+                        <p>验证码</p>
+                        <input type="text" placeholder="验证码" maxLength="4" value={this.state.code || ''}
+                               onChange={e => this.codeChange(e)}/>
+                        <span onClick={this.getCode}>{this.state.text}</span>
+                    </div>
+                </div>
+
+            );
+        }
+    }
+
+    ReactDOM
+        .render(
+            <Toggle/>,
+            document
+                .getElementById(
+                    'example'
+                )
+        )
+    ;
+</script>
+
+</html>

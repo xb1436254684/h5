@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>领取活动</title>
+    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/APIURLcs.js"></script>
+<!--    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/APIURLzs.js"></script>-->
+    <style>
+        * {padding: 0;margin: 0;box-sizing: border-box;}
+        body, html {-webkit-overflow-scrolling: touch;overflow-scrolling: touch;width: 100%;height: 100%;background: #f8f8f8;}
+        #example, body {font: 16px/150% "Microsoft YaHei", "微软雅黑"; color: #222; -webkit-font-smoothing: antialiased;background: #fff;overflow: hidden;overflow-y: auto}
+        #example {width: 100%;height: 100%}
+        ul {list-style: none;overflow: hidden;}
+        a {text-decoration: none;color: #000000;}
+        ol {display: block; list-style-type: decimal;}
+        i {font-style: normal;}
+        html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 { -webkit-text-size-adjust: 100%;}
+        * {-webkit-tap-highlight-color: rgba(255, 255, 255, 0);}
+        input, textarea {outline: none}
+        textarea {resize: none}
+        button {cursor: pointer;}
+        button:focus {outline: 0;}
+        .clear {clear: both;}
+        .layer {white-space: nowrap;position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);background: rgba(0, 0, 0, 0.5);padding: 0 1rem;height: 2rem; line-height: 2rem;color: #fff;border-radius: 0.5rem;z-index: 1000;}
+        .activityMain {background: url(https://qiniuscd.yxcsx.com/huodongbg2.png) no-repeat top;background-size: 100% auto;}
+        .main {padding-top: 2rem;min-height: 100%;}
+        .main > img {width: 100%;display: block;margin: 0 auto;}
+        .activityMain .listO li {width: calc(100% / 2);margin: 0 auto;}
+        .activityMain .listO li > div {background: #ffffff;padding: 2rem 1rem 1rem 1rem;border-radius: 1rem;box-shadow: 0rem -4rem 3.5rem rgba(112, 191, 42, 0.1) inset}
+        .activityMain .listO li:nth-of-type(2n) {margin-right: 0rem;padding: 0 1rem 1rem 0.5rem;}
+        .activityMain .listO .btn {padding: 0.2rem 1rem;border-radius: 1rem;background: #70BF2A;color: #ffffff;font-size: 0.8rem;}
+        .activityMain .listO li {display: block; text-align: center;float: left; margin-bottom: 1rem;padding: 0 0.5rem 1rem 1rem;}
+        .activityMain .listO li.dan {float: none}
+        /*.activityMain .listO li:nth-of-type(1), .activityMain .listO li:nth-of-type(2) {box-shadow: 0rem -2rem 0.1rem rgba(112, 191, 42, 0.1) inset;}*/
+        .activityMain .listO li p {color: #70BF2A}
+        .activityMain .listO li p:nth-of-type(1) {font-size: 1.3rem;font-weight: 700;margin-bottom: 0.5rem;font-style: italic;}
+        .activityMain .listO li p:nth-of-type(2) {margin: 0.5rem 0;font-size: 0.6rem;}
+        .activityMain .listO {margin-bottom: 2rem;}
+        .line {width: calc(100% - 2rem);margin: 0 auto;border-bottom: 0.2rem dashed #70BF2A}
+        .activityMain .listT li {width: 100%;color: #ffffff;}
+        .activityMain .listT li:nth-of-type(1){padding-top: 2rem}
+        .activityMain .listT li img {width: 100%;}
+        .activityReceive {position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0, 0, 0, 0.5);z-index: 100}
+        .activityReceive .relative {position: relative;width: 100%;height: 100%;}
+        .activityReceive .relative .getactivity {position: absolute; width: 13rem;height: 16rem; left: 50%;top: 30%;transform: translateX(-50%);background: url(https://qiniuscd.yxcsx.com/lingqu.png) no-repeat;background-size: 100% 100%;}
+        .activityReceive .relative .getactivity .close {width: 2rem;height: 2rem;position: absolute;top: -1rem;right: -0.5rem;}
+        .activityReceive .relative .getactivity .close img {width: 100%;height: 100%;}
+        .text {text-align: center;padding-top: 5.5rem;color: #F41B1A;}
+        .text p:nth-of-type(1) {font-weight: 700;}
+        .text p:nth-of-type(2) {font-size: 0.8rem;}
+        .btns {width: 9rem;background: #ffffff;color: #F41B1A;height: 2rem;font-size: 0.8rem;border-radius: 0.2rem; line-height: 2rem;text-align: center;position: absolute;bottom: 2rem;left: 50%;transform: translateX(-50%);}
+        .share {position: absolute;bottom: 0;left: 0;background: #1B1D21;width: 100%;padding: 1rem;color: #ffffff;border-top-left-radius: 1rem;border-top-right-radius: 1rem;}
+        .share .title span {display: inline-block;font-weight: 700;}
+        .share .title img {display: inline-block;float: right;width: 1.5rem;}
+        .share .share_ul {margin-top: 1rem;}
+        .share .share_ul li {width: calc((100% - 6rem) / 4);margin-right: 2rem;float: left;}
+        .share .share_ul li:nth-of-type(4) {margin-right: 0rem;}
+        .share .share_ul li img {width: 100%;display: block;margin: 0 auto;}
+        .share .share_ul li p {text-align: center;margin-top: 1rem;padding-bottom: 3rem;}
+        .kong {width: 100%;height: 100%;text-align: center;padding-top: 40%;}
+        .kong img {width: 50%;}
+        .kong p {color: rgba(146, 150, 159, 1);font-size: 0.8rem;}
+        #layer {display: none}
+        .loading {position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);width: 5rem}
+        #activityReceive {display: none}
+    </style>
+
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+
+
+<body>
+<div class="layer" id="layer"></div>
+<div class="activityReceive" id="activityReceive">
+    <div class="relative">
+        <div class="getactivity">
+            <div class="close"><img src="https://qiniuscd.yxcsx.com/close.png"/></div>
+            <div class="text">
+                <p></p>
+                <p></p>
+            </div>
+            <div class="btns">领取成功，去使用</div>
+        </div>
+    </div>
+</div>
+<div style="width: 100%; height: 100%">
+    <div class="activityMain">
+        <div class="main">
+            <img src="https://qiniuscd.yxcsx.com/zi.png"/>
+            <ul class="listO">
+                <div class="clear"></div>
+            </ul>
+            <div class="line"></div>
+            <ul class="listT">
+                <div class="clear"></div>
+            </ul>
+        </div>
+    </div>
+    <div class="kong" style="display: none">
+        <img src="https://qiniuscd.yxcsx.com/img_kongx.png"/>
+        <p>暂无活动</p>
+    </div>
+    <img class="loading" src="https://qiniuscd.yxcsx.com/lealing.gif" alt=""/>
+</div>
+<script>
+    function getToken(token) {
+        sessionStorage.setItem('token', token)
+    }
+    function setupWebViewJavascriptBridge(callback) {
+        if (window.WebViewJavascriptBridge) {
+            return callback(WebViewJavascriptBridge);
+        }
+        if (window.WVJBCallbacks) {
+            return window.WVJBCallbacks.push(callback);
+        }
+        window.WVJBCallbacks = [callback];
+        let WVJBIframe = document.createElement('iframe');
+        WVJBIframe.style.display = 'none';
+        WVJBIframe.src = 'https://__bridge_loaded__';
+        document.documentElement.appendChild(WVJBIframe);
+        setTimeout(function () {
+            document.documentElement.removeChild(WVJBIframe)
+        }, 0)
+    }
+
+    // 判断设备为 ios
+    function isIos() {
+        let u = navigator.userAgent;
+        if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+            return true;
+        }
+        return false;
+    }
+
+    function afterSharing(actId, state) {
+        $.ajax({
+            //接口api
+            url: api_url+'/user-proxy/welfare/appReceiveActivity',
+            type: 'get',
+            dataType: 'json',
+            data: {welfareId: actId},
+            beforeSend: function (XMLHttpRequest) {
+                XMLHttpRequest.setRequestHeader("token", sessionStorage.token);
+                XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+            },
+            async: false,
+            success: function (res) {
+                if (res.code == 0) {
+                    let arr = $(".listO li")
+                    for (let i in arr) {
+                        if (arr.eq(i).find('.btn').attr('welfareid') == actId) {
+                            arr.eq(i).find('.btn').attr('userReceive', true)
+                            arr.eq(i).find('.btn').text('已分享')
+                            $("#activityReceive p").eq(0).text(arr.eq(i).find('p').eq(0).text())
+                            $("#activityReceive p").eq(1).text(arr.eq(i).find('p').eq(1).text())
+                            $("#activityReceive").show()
+                        }
+                    }
+                } else if (res.code == 1006) {
+                    $("#layer").text('领取失败，活动已结束！')
+                    $("#layer").show()
+                    setTimeout(function () {
+                        $("#layer").hide()
+                    }, 1000)
+                } else {
+                    $("#layer").text(res.msg)
+                    $("#layer").show()
+                    setTimeout(function () {
+                        $("#layer").hide()
+                    }, 1000)
+                }
+            },
+        })
+    }
+    $(function () {
+        setTimeout(function () {
+            $.ajax({
+                url: api_url + '/user-proxy/welfare/appListWelfare',
+                type: 'get',
+                dataType: 'json',
+                beforeSend: function (XMLHttpRequest) {
+                    XMLHttpRequest.setRequestHeader("token", sessionStorage.token);
+                    XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                    XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                },
+                async: false,
+                success: function (res) {
+                    if (res.code == 0) {
+                        if (res.data.length == 0) {
+                            $(".kong").show()
+                        } else {
+                            for (let j = 0; j < res.data.length; j++) {
+                                if (res.data[j].type == 3) {
+                                    let htmlstr = '<li receiveCondition="' + res.data[j].receiveCondition + '"><img src="' + JSON.parse(res.data[j].welfareUrl).welfareUrl[0].url + '" /></li>'
+                                    setTimeout(function () {
+                                        $(".loading").hide()
+                                        $(".listT").append(htmlstr)
+                                    },500)
+                                } else {
+                                    let htmlstr = ''
+                                    let spanhtml = ''
+                                    let sta
+                                    switch (res.data[j].receiveCondition) {
+                                        case 0:
+                                            res.data[j].userReceive ? sta = '已领取' : sta = '领取'
+                                            spanhtml = '<span class="btn getactivity" welfareId="' + res.data[j].welfareId + '" userReceive=' + res.data[j].userReceive + '  discountPeriod="' + res.data[j].discountPeriod + '" type="' + res.data[j].type + '" balance="' + res.data[j].balance / 100 + '" welfareTitle="' + res.data[j].welfareTitle + '" id="getactivity">' + sta + '</span>'
+                                            break;
+                                        case 1:
+                                            res.data[j].userReceive ? sta = '已分享' : sta = '分享'
+                                            spanhtml = '<span class="btn" welfareId="' + res.data[j].welfareId + '" userReceive=' + res.data[j].userReceive + ' id="share">' + sta + '</span>'
+                                            break;
+                                        case 2:
+                                            res.data[j].userReceive ? sta = '已领取' : sta = '领取'
+                                            spanhtml = '<span class="btn getactivity" welfareId="' + res.data[j].welfareId + '" userReceive=' + res.data[j].userReceive + ' id="follow">关注公众号</span>'
+                                            break;
+                                    }
+                                    if (res.data.length == 1) {
+                                        htmlstr = '<li class="dan">\n' +
+                                            '                                        <div><p>' + res.data[j].welfareTitle + '</p>\n' +
+                                            '                                        <p>' + res.data[j].contentDescribe + '</p>\n' + spanhtml +
+                                            '                                    </div></li>'
+                                    } else {
+                                        htmlstr = '<li class="">\n' +
+                                            '                                        <div><p>' + res.data[j].welfareTitle + '</p>\n' +
+                                            '                                        <p>' + res.data[j].contentDescribe + '</p>\n' + spanhtml +
+                                            '                                    </div></li>'
+                                    }
+                                    setTimeout(function () {
+                                        $(".loading").hide()
+                                        $(".listO").append(htmlstr)
+                                    },500)
+                                }
+                            }
+                        }
+                    }
+                },
+                error: function (e) {
+                    $("#layer").text(e.msg)
+                    $("#layer").show()
+                    setTimeout(function () {
+                        $("#layer").hide()
+                    },1000)
+                }
+            })
+        },500)
+        $("#activityReceive").on('click', '.btns', function () {
+            if (isIos()) {
+                setupWebViewJavascriptBridge(function (bridge) {
+                    //homePage  返回首页    lastPage  返回上一页
+                    bridge.callHandler('closeH5View', 'homePage', function (response) {
+                    })
+                })
+            } else {
+                window.android.closeH5View('homePage')
+            }
+        })
+        setupWebViewJavascriptBridge(function (bridge) {
+            function afterSharingios(actId, state) {
+                $.ajax({
+                    //接口api
+                    url: api_url+'/user-proxy/welfare/appReceiveActivity',
+                    type: 'get',
+                    dataType: 'json',
+                    data: {welfareId: actId},
+                    beforeSend: function (XMLHttpRequest) {
+                        XMLHttpRequest.setRequestHeader("token", sessionStorage.token);
+                        XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                        XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                    },
+                    async: false,
+                    success: function (res) {
+                        if (res.code == 0) {
+                            let arr = $(".listO li")
+                            for (let i in arr) {
+                                if (arr.eq(i).find('.btn').attr('welfareid') == actId) {
+                                    arr.eq(i).find('.btn').attr('userReceive', true)
+                                    arr.eq(i).find('.btn').text('已分享')
+                                    $("#activityReceive p").eq(0).text(arr.eq(i).find('p').eq(0).text())
+                                    $("#activityReceive p").eq(1).text(arr.eq(i).find('p').eq(1).text())
+                                    $("#activityReceive").show()
+                                }
+                            }
+                        } else if (res.code == 1006) {
+                            $("#layer").text('领取失败，活动已结束！')
+                        } else {
+                            $("#layer").text(res.msg)
+                        }
+                    },
+                })
+            }
+
+            bridge.registerHandler('getToken', function (data, responseCallback) {
+                sessionStorage.setItem('token', data)
+            })
+            bridge.registerHandler('afterSharing', function (data, responseCallback) {
+                afterSharingios(data.actId, data.state)
+            })
+        })
+
+        $("#activityReceive").on("click", '.close', function (e) {
+            $("#activityReceive").hide()
+        })
+
+        //跳转
+        $(".listT").on('click', 'li', function () {
+            if ($(this).attr("receiveCondition") == 3) {
+                //跳转到推荐
+                window.location.href = 'https://qiniuscd.yxcsx.com/RecommendCs20.html'
+            } else if ($(this).attr("receiveCondition") == 4) {
+                //跳转到充值
+                if (isIos()) {
+                    setupWebViewJavascriptBridge(function (bridge) {
+                        //reward我的奖励 Recharge充值
+                        bridge.callHandler('toApp', {value: 'Recharge'}, function (response) {
+                        })
+                    })
+                } else {
+                    // window.android.toRecharge()
+                    window.android.toApp('Recharge')
+                }
+            }
+        })
+        //直接领取
+        $(".listO").on('click', '.getactivity', function (e) {
+            let userReceive = $(this).attr('userReceive')
+            let welfareId = $(this).attr('welfareId')
+            e.stopPropagation()
+            if (userReceive != 'true') {
+                if ($(this).attr('type') == 1) {
+                    if(isIos()){
+                        $(".activityReceive .text p").eq(0).text('赠送点券分' + $(this).attr('balance'))
+                    }else{
+                        $(".activityReceive .text p").eq(0).text('赠送余额' + $(this).attr('balance'))
+                    }
+                } else {
+                    $(".activityReceive .text p").eq(0).text($(this).attr('welfareTitle'))
+                    $(".activityReceive .text p").eq(1).text('领取之日起' + $(this).attr('discountPeriod') + '天有效')
+                }
+                let _this=$(this)
+                $.ajax({
+                    url: api_url + '/user-proxy/welfare/appReceiveActivity',
+                    type: 'get',
+                    dataType: 'json',
+                    data: {welfareId: welfareId},
+                    beforeSend: function (XMLHttpRequest) {
+                        XMLHttpRequest.setRequestHeader("token", sessionStorage.token);
+                        XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                        XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                    },
+                    async: false,
+                    success: function (res) {
+                        if (res.code == 0) {
+                            _this.text('已领取')
+                            _this.attr('userReceive', true)
+                            $(".activityReceive").show()
+                        } else if (res.code == 1006) {
+                            $("#layer").text('领取失败，活动已结束！')
+                            $("#layer").show()
+                            setTimeout(function () {
+                                $("#layer").hide()
+                            },1000)
+                        } else {
+                            $("#layer").text(res.msg)
+                            $("#layer").show()
+                            setTimeout(function () {
+                                $("#layer").hide()
+                            },1000)
+                        }
+                    },
+                })
+            } else {
+                $("#layer").text('已领取')
+                $("#layer").show()
+                setTimeout(function () {
+                    $("#layer").hide()
+                },1000)
+            }
+        })
+        $("#example").on('click', '.close', function () {
+            $(".activityReceive").hide()
+        })
+        $("#example").on('click', '.btns', function () {
+            if (isIos()) {
+                setupWebViewJavascriptBridge(function (bridge) {
+                    //homePage  返回首页    lastPage  返回上一页
+                    bridge.callHandler('closeH5View', 'homePage', function (response) {
+                    })
+                })
+            } else {
+                window.android.closeH5View('homePage')
+            }
+        })
+        $("#example").on('click', '.getactivity', function (e) {
+            e.stopPropagation()
+        })
+        // 分享
+        $(".listO").on('click', '#share', function (e) {
+            e.stopPropagation()
+            let userReceive = $(this).attr('userReceive')
+            let actId = $(this).attr("welfareid")
+            let title = '优小菜推广赚钱'
+            let center = '买菜就上优小菜，30分钟到家快'
+            let url = 'https://qiniuscd.yxcsx.com/userdowm14.html'
+            let imgUrl = 'https://qiniuscd.yxcsx.com/share1.png'
+            $.ajax({
+                url: api_url + '/user-proxy/login/isLogin',
+                type: 'get',
+                dataType: 'json',
+                beforeSend: function (XMLHttpRequest) {
+                    XMLHttpRequest.setRequestHeader("token", sessionStorage.token);
+                    XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                    XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                },
+                async: false,
+                success: function (res) {
+                    if (res.code == 0) {
+                        if (userReceive != 'true') {
+                            if (isIos()) {
+                                setupWebViewJavascriptBridge(function (bridge) {
+                                    bridge.callHandler('share', {
+                                        actId: actId,
+                                        title: title,
+                                        center: center,
+                                        url: url,
+                                        imgUrl: imgUrl
+                                    }, function (response) {
+                                    })
+                                })
+                            } else {
+                                window.android.share(actId, title, center, url, imgUrl)
+                            }
+                        }
+                    } else {
+                        $("#layer").text(res.msg)
+                        $("#layer").show()
+                        setTimeout(function () {
+                            $("#layer").hide()
+                        },1000)
+                    }
+                },
+            })
+
+        })
+    })
+
+
+</script>
+</body>
+
+</html>

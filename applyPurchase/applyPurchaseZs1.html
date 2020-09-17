@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>采购申请</title>
+</head>
+<style>
+    * {padding: 0;margin: 0;box-sizing: border-box;}
+    body {font: 16px/150% "Microsoft YaHei", "微软雅黑"; color: #222; -webkit-font-smoothing: antialiased;background: #f6f6f6;}
+    body, html {-webkit-overflow-scrolling: touch;overflow-scrolling: touch;width: 100%;height: 100%}
+    ul {list-style: none;overflow: hidden;}
+    a {text-decoration: none;color: #000000;}
+    ol {display: block; list-style-type: decimal;}
+    i {font-style: normal;}
+    input, textarea {outline: none;border-radius: 0.2rem;background: #ffffff;}
+    .clear {clear: both;}
+    html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 { -webkit-text-size-adjust: 100%;}
+    button:focus {outline: 0;}
+    .main {height: calc(100% - 4rem); width: 100%;padding: 1rem;position: relative}
+    .title {color: #72BD37;font-size: 1.2rem;font-weight: 700;line-height: 3rem}
+    .input_title {font-size: 1.2rem;font-weight: 700;margin: 1rem 0}
+    .input_title span {font-weight: normal;font-size: 1rem}
+    textarea {resize: none;width: 100%;height: 8rem;overflow-y: auto;border: 0;padding: 0.5rem;border-radius: 0.2rem;word-break: break-all}
+    input {width: 100%;height: 2rem;border: 0;height: 3rem;padding: 0 0.5rem}
+    button {border: 0; display: block;margin: 0 auto; width: calc(100% - 2rem);background: #72BD37;color: #ffffff;line-height: 2.5rem;border-radius: 0.5rem;text-align: center}
+    .layer {display: none;white-space: nowrap;position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);background: rgba(0, 0, 0, 0.5);padding: 0 1rem;height: 2rem; line-height: 2rem;color: #fff;border-radius: 0.5rem;z-index: 1000;}
+    .tishi {color: #c6c6c6;font-size: 0.6rem;padding: 0 0.5rem}
+</style>
+
+<body>
+<div class="main">
+    <p class="title">申请成为商家</p>
+    <p class="input_title">申请理由<span>（200字以内）</span></p>
+    <textarea placeholder="请输入申请理由..." onchange="chanes(200)"></textarea>
+    <p class="tishi">还剩200个字可以输入</p>
+    <p class="input_title">详细地址<span>（50字以内）</span></span></p>
+    <input type="text" placeholder="请输入详细地址" onchange="chanes(50)"/>
+    <p class="tishi">还剩50个字可以输入</p>
+</div>
+<button onclick="submits()">提交</button>
+<div class="layer">
+
+</div>
+</body>
+<script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+<script>
+    let apiUrl = 'https://api.yxcsx.com'
+
+    function chanes(num) {
+        let nums = num;
+        let len
+        nums == 200 ? len = $("textarea").val().length : len = $("input").val().length
+        let showLen = nums - len
+        if (nums == 200) {
+            showLen > 0 ? $(".tishi").eq(0).text('还剩' + (nums - len) + '个字可以输入') : $(".tishi").eq(0).text('还剩0个字可以输入')
+        } else {
+            showLen > 0 ? $(".tishi").eq(1).text('还剩' + (nums - len) + '个字可以输入') : $(".tishi").eq(1).text('还剩0个字可以输入')
+        }
+    }
+
+    function getToken(token) {
+        sessionStorage.setItem('token', token)
+    }
+
+    function setupWebViewJavascriptBridge(callback) {
+        if (window.WebViewJavascriptBridge) {
+            return callback(WebViewJavascriptBridge);
+        }
+        if (window.WVJBCallbacks) {
+            return window.WVJBCallbacks.push(callback);
+        }
+        window.WVJBCallbacks = [callback];
+        let WVJBIframe = document.createElement('iframe');
+        WVJBIframe.style.display = 'none';
+        WVJBIframe.src = 'https://__bridge_loaded__';
+        document.documentElement.appendChild(WVJBIframe);
+        setTimeout(function () {
+            document.documentElement.removeChild(WVJBIframe)
+        }, 0)
+    }
+
+    // 判断设备为 ios
+    function isIos() {
+        let u = navigator.userAgent;
+        if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+            return true;
+        }
+        return false;
+    }
+
+    $(function () {
+        //监听textarea
+        $('body').delegate('textarea', 'propetychange input', function () {
+            let nums = 200;
+            let len = $(this).val().length
+            let showLen = nums - len
+            showLen > 0  || showLen == 0 ? $(".tishi").eq(0).text('还剩' + (nums - len) + '个字可以输入！') : $(".tishi").eq(0).text('已超出可以输入的限制!')
+        })
+        //监听input
+        $("input").bind("input propertychange", function () {
+            let nums = 50;
+            let len = $(this).val().length
+            let showLen = nums - len
+            showLen > 0 || showLen == 0 ? $(".tishi").eq(1).text('还剩' + (nums - len) + '个字可以输入！') : $(".tishi").eq(1).text('已超出可以输入的限制！')
+        })
+        $("body").css('height', document.body.clientHeight)
+        setupWebViewJavascriptBridge(function (bridge) {
+            bridge.registerHandler('getToken', function (data, responseCallback) {
+                sessionStorage.setItem('token', data)
+            })
+        })
+    })
+
+    function submits() {
+        let reason = $("textarea").val().trim()
+        let address = $("input").val().trim()
+        reason !== '' && address !== '' ? apiAjax(reason, address) : layers(1)
+    }
+
+    function apiAjax(reason, address) {
+        if (reason.length > 200 || address.length > 50) {
+            $(".layer").text('字数超过限制')
+            $(".layer").show()
+            setTimeout(function () {
+                $(".layer").hide()
+            }, 1000)
+        } else {
+            $.ajax({
+                type: "post",
+                url: apiUrl + "/user-proxy/applyBusRole/submitApply",
+                beforeSend: function (XMLHttpRequest) {
+                    XMLHttpRequest.setRequestHeader("token", sessionStorage.token);
+                    // XMLHttpRequest.setRequestHeader("token", 'd42bab9796134c4e8ad487606eba837e');
+                    XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                    XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                },
+                async: false,
+                data: JSON.stringify({applyReason: reason, shopAddress: address}),
+                success: function (res) {
+                    if (res.code == 0) {
+                        $(".layer").text('提交成功！')
+                        $(".layer").show()
+                        setTimeout(function () {
+                            $(".layer").hide()
+                            if (isIos()) {
+                                setupWebViewJavascriptBridge(function (bridge) {
+                                    //homePage  返回首页    lastPage  返回上一页
+                                    bridge.callHandler('closeH5View', 'homePage', function (response) {
+                                    })
+                                })
+                            } else {
+                                window.android.closeH5View('homePage')
+                            }
+                        }, 1000)
+                    } else {
+                        layers(res.msg)
+                    }
+                },
+                error: function (err) {
+                    layers(err.status)
+                }
+            });
+        }
+
+    }
+
+    function layers(msg) {
+        if (msg == 1) {
+            $(".layer").text('信息输入不完善')
+        } else {
+            $(".layer").text(msg)
+        }
+        $(".layer").show()
+        setTimeout(function () {
+            $(".layer").hide()
+        }, 1000)
+    }
+</script>
+
+</html>

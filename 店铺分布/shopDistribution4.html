@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>店铺分布</title>
+		<script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+	</head>
+	<style>
+		*{padding: 0;margin: 0;box-sizing: border-box;}
+		body,html{-webkit-overflow-scrolling: touch;overflow-scrolling: touch;width: 100%;height: 100%;background: #f8f8f8;}
+		body{font: 16px/150% "Microsoft YaHei", "微软雅黑"; color: #222; -webkit-font-smoothing: antialiased;padding-top: 2rem;overflow: hidden;overflow-y: auto;}
+		ul{list-style: none;overflow: hidden;}
+		a{text-decoration: none;color: #000000;}
+		ol{display: block; list-style-type: decimal;}
+		i{font-style: normal;}
+		html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6{ -webkit-text-size-adjust: 100%;}
+		*{-webkit-tap-highlight-color: rgba(255, 255, 255, 0);}
+		input,textarea{outline: none}
+		textarea{resize: none}
+		button{cursor: pointer;}
+		button:focus{outline: 0;}
+		.clear{clear: both;}
+		.shopistribution{padding: 0 0.5rem;}
+		.title{padding: 0.5rem 0.8rem;background: rgba(191, 204, 188, 1);color: rgba(112, 191, 42, 1);float: left;border-radius: 0.2rem;}
+		.list>li{line-height: 3rem;height: 3rem;}
+		.list>li:nth-of-type(2n){background: rgba(244, 249, 244, 1);}
+		.list .sales{float: right;padding-right: 1.5rem;}
+		.sanjiao{width: 0.8rem;display: inline-block;margin-right: 0.2rem;}
+		.sanjiao img{width: 100%;transition: 0.1s;}
+		.list_city{padding-left: 1rem;display: none;}
+		.list_city>li{line-height: 3rem;height: 3rem;}
+		.list_district{padding-left: 1.3rem;display: none;}
+		.list_district>li{line-height: 3rem;height: 3rem;}
+		.layer{display: none;position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);background: rgba(0, 0, 0, 0.5);padding: 0 1rem;height: 2rem; line-height: 2rem;color: #fff;border-radius: 0.5rem}
+
+	</style>
+
+	<body>
+		<div class="shopistribution">
+			<span class="title" onclick="window.androidFunction()">地区</span>
+			<span class="title" style="float: right;">门店数量</span>
+			<div class="clear"></div>
+			<ul class="list">
+
+			</ul>
+		</div>
+		<div class="layer"></div>
+	</body>
+	<script>
+		function layer(msg) {
+			$(".layer").show()
+			$(".layer").text(msg)
+			setTimeout(function() {
+				$(".layer").hide()
+			}, 1000)
+		}
+
+		// let IP = 'https://csapi.yxcsx.com'
+		//		let IP = '//192.168.1.120:9999'
+		let auth = 'Basic youshetong:youxiaocai'
+				let IP = 'https://api.yxcsx.com'
+		$(function() {
+			$.ajax({
+				type: "GET",
+				url: IP + '/goods-proxy/shop/getShopCityNum',
+				dataType: "json",
+				beforeSend: function(XMLHttpRequest) {
+					XMLHttpRequest.setRequestHeader("auth", auth);
+				},
+				success: function(res) {
+					if(res.code == 0) {
+						console.log(res)
+						let data = res.data
+						$(".list").empty();
+						for(var i in data) {
+							$(".list").append('<li types="1" onclick="province(' + data[i].adcode + ')"><span class="sanjiao"><img src="https://qiniuscd.yxcsx.com/sanjiao.png"/></span><span class="province">' + data[i].name + '</span><span class="sales">' + data[i].shopNum + '</span><div class="clear"></div></li><ul class="list_city" id="list_city' + data[i].adcode + '"></ul>')
+						}
+					} else {
+						layer(res.msg)
+					}
+				},
+				error: function(err) {
+					layer('接口错误:' + err.status)
+					console.log(err)
+				}
+			});
+		})
+
+		function province(provinceCode) {
+			var type = $("#list_city" + provinceCode).prev().attr('types')
+			if(type == 1) {
+				$("#list_city" + provinceCode).empty();
+				$("#list_city" + provinceCode).prev().attr('types', 0)
+				$("#list_city" + provinceCode).prev().find('img').css('transform','rotate(90deg)')
+				$.ajax({
+					type: "GET",
+					url: IP + '/goods-proxy/shop/getShopCityNum',
+					dataType: "json",
+					data: {
+						provinceCode: provinceCode
+					},
+					beforeSend: function(XMLHttpRequest) {
+						XMLHttpRequest.setRequestHeader("auth", auth);
+					},
+					success: function(res) {
+						if(res.code == 0) {
+							let data = res.data
+							for(var i in data) {
+								$("#list_city" + provinceCode).append('<li types="1" onclick="city(' + data[i].adcode + ')"><span class="sanjiao"><img src="https://qiniuscd.yxcsx.com/sanjiao1.png"/></span> <span class="province">' + data[i].name + '</span><span class="sales">' + data[i].shopNum + '</span><div class="clear"></div></li><ul id="list_district' + data[i].adcode + '" class="list_district"></ul>')
+							}
+							$("#list_city" + provinceCode).slideDown()
+						} else {
+							layer(res.msg)
+						}
+					},
+					error: function(err) {
+						layer('接口错误:' + err.status)
+						console.log(err)
+					}
+				});
+			} else {
+				$("#list_city" + provinceCode).prev().attr('types', 1)
+				$("#list_city" + provinceCode).prev().find('img').css('transform','rotate(0deg)')
+				$("#list_city" + provinceCode).slideUp()
+			}
+
+		}
+
+		function city(cityCode) {
+			var type = $("#list_district" + cityCode).prev().attr('types')
+			if(type == 1) {
+				$("#list_district" + cityCode).empty();
+				$("#list_district" + cityCode).prev().attr('types', 0)
+				$("#list_district" + cityCode).prev().find('img').css('transform','rotate(90deg)')
+				$.ajax({
+					type: "GET",
+					url: IP + '/goods-proxy/shop/getShopCityNum',
+					dataType: "json",
+					data: {
+						cityCode: cityCode
+					},
+					beforeSend: function(XMLHttpRequest) {
+						XMLHttpRequest.setRequestHeader("auth", auth);
+					},
+					success: function(res) {
+						if(res.code == 0) {
+							let data = res.data
+							for(var i in data) {
+								$("#list_district" + cityCode).append('<li><span class="province">' + data[i].name + '</span><span class="sales">' + data[i].shopNum + '</span><div class="clear"></div></li>')
+							}
+							$("#list_district" + cityCode).slideDown()
+						} else {
+							layer(res.msg)
+						}
+					},
+					error: function(err) {
+						layer('接口错误:' + err.status)
+						console.log(err)
+					}
+				});
+
+			} else {
+				$("#list_district" + cityCode).prev().attr('types', 1)
+				$("#list_district" + cityCode).prev().find('img').css('transform','rotate(0deg)')
+				$("#list_district" + cityCode).slideUp()
+			}
+
+		}
+	</script>
+
+</html>

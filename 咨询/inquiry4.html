@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>质询</title>
+		<script type="text/javascript" src="http://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+	</head>
+	<style type="text/css">
+		*{padding: 0;margin: 0;box-sizing: border-box;}
+		body{font: 16px/150% "Microsoft YaHei", "微软雅黑"; color: #222; -webkit-font-smoothing: antialiased;padding-top: 2rem;}
+		body, html{-webkit-overflow-scrolling: touch;overflow-scrolling: touch;width: 100%;height: 100%;background: #f8f8f8;}
+		ul{list-style: none;overflow: hidden;}
+		a{text-decoration: none;color: #000000;}
+		ol{display: block; list-style-type: decimal;}
+		i{font-style: normal;}
+		html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6{ -webkit-text-size-adjust: 100%;}
+		*{-webkit-tap-highlight-color: rgba(255, 255, 255, 0);}
+		input, textarea{outline: none}
+		textarea{resize: none}
+		button{cursor: pointer;}
+		button:focus{outline: 0;}
+		.clear{clear: both;}
+		.viewport{padding: 0 0.5rem;}
+		.viewport button{width: 100%;height: 4rem;line-height: 4rem; border: 0;background: rgba(112, 191, 42, 1);border-radius: 0.5rem;margin-bottom: 1rem;color: #ffffff;font-size: 1rem;}
+		.viewport button:active{background: rgba(112, 191, 42, 0.8)}
+		.viewport button:nth-of-type(2){background: rgba(117, 206, 178, 1);}
+		.viewport button:nth-of-type(2):active{background: rgba(117, 206, 178, 0.8);}
+		.viewport button:nth-of-type(4){background: rgba(182, 189, 187, 1);}
+		.viewport button:nth-of-type(4):active{background: rgba(182, 189, 187, 0.8);}
+		.viewport button img{width: 1.5rem;vertical-align: middle;margin: 0 0.5rem;margin-top: -0.2rem;}
+		.layer{display: none;position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);background: rgba(0, 0, 0, 0.5);padding: 0 1rem;height: 2rem; line-height: 2rem;color: #fff;border-radius: 0.5rem}
+
+	</style>
+
+	<body>
+		<div class="viewport">
+			<!--<button id="cooperation"><img src="http://qiniuscd.yxcsx.com/icon@3x.png">合作洽谈</button>
+			<button id="jobwanted"><img src="http://qiniuscd.yxcsx.com/icon@3x.png">岗位求职</button>
+			<button id="consultation"><img src="http://qiniuscd.yxcsx.com/icon@3x.png">技术咨询</button>
+			<button id="complaint"><img src="http://qiniuscd.yxcsx.com/icon@3x.png">我要投诉</button>-->
+		</div>
+		<button id="complaint" onclick="click('123')"><img src="http://qiniuscd.yxcsx.com/icon@3x.png">我要投诉</button>
+
+		<div class="layer"></div>
+	</body>
+
+	<script>
+		function layer(msg) {
+			$(".layer").show()
+			$(".layer").text(msg)
+			setTimeout(function() {
+				$(".layer").hide()
+			}, 1000)
+		}
+		//		let IP = 'http://csapi.yxcsx.com'
+		let IP = '//192.168.1.120:9999'
+		let auth = 'Basic youshetong:youxiaocai'
+		//		let IP = 'https://api.yxcsx.com'
+		$(function() {
+			$.ajax({
+				type: "GET",
+				url: IP + '/user-proxy/companyPhone/getPhoneMenuPage',
+				data: {
+					client: 1,
+					parent: 0,
+				},
+				dataType: "json",
+				beforeSend: function(XMLHttpRequest) {
+					XMLHttpRequest.setRequestHeader("auth", auth);
+				},
+				success: function(res) {
+					if(res.code == 0) {
+						let data = res.data.records
+						$(".viewport").empty();
+						for(var i in data) {
+							$(".viewport").append("<button onclick=clicks('" + data[i].title + "')><img src='http://qiniuscd.yxcsx.com/icon@3x.png'>" + data[i].title + "</button>")
+						}
+					} else {
+						layer(res.msg)
+					}
+				},
+				error: function(err) {
+					layer('接口错误:' + err.status)
+					console.log(err)
+				}
+			});
+		})
+		// 判断设备为 ios
+		function isIos() {
+			var u = navigator.userAgent;
+			if(u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+				return true;
+			}
+			return false;
+		}
+
+		function clicks(parent) {
+			if(isIos()) {
+				function setupWebViewJavascriptBridge(callback) {
+					if(window.WebViewJavascriptBridge) {
+						return callback(WebViewJavascriptBridge);
+					}
+					if(window.WVJBCallbacks) {
+						return window.WVJBCallbacks.push(callback);
+					}
+					window.WVJBCallbacks = [callback];
+					var WVJBIframe = document.createElement('iframe');
+					WVJBIframe.style.display = 'none';
+					WVJBIframe.src = 'https://__bridge_loaded__';
+					document.documentElement.appendChild(WVJBIframe);
+					setTimeout(function() {
+						document.documentElement.removeChild(WVJBIframe)
+					}, 0)
+				}
+
+				setupWebViewJavascriptBridge(function(bridge) {
+					bridge.callHandler('open', parent, function(response) {})
+				})
+			} else {
+				console.log(parent)
+				window.android.open(parent)
+			}
+
+		}
+
+		//		isIos() ? ios() : android()
+		//		let token
+		//
+		//		function getToken(token) {
+		//			token = token
+		//		}
+		//		function ios() {
+		//			function setupWebViewJavascriptBridge(callback) {
+		//				if(window.WebViewJavascriptBridge) {
+		//					return callback(WebViewJavascriptBridge);
+		//				}
+		//				if(window.WVJBCallbacks) {
+		//					return window.WVJBCallbacks.push(callback);
+		//				}
+		//				window.WVJBCallbacks = [callback];
+		//				var WVJBIframe = document.createElement('iframe');
+		//				WVJBIframe.style.display = 'none';
+		//				WVJBIframe.src = 'https://__bridge_loaded__';
+		//				document.documentElement.appendChild(WVJBIframe);
+		//				setTimeout(function() {
+		//					document.documentElement.removeChild(WVJBIframe)
+		//				}, 0)
+		//			}
+		//
+		//			setupWebViewJavascriptBridge(function(bridge) {
+		//				$(".viewport").on('click', ' button0', function(e) {
+		//					e.preventDefault()
+		//					let parent = $(this).attr("parent")
+		//					bridge.callHandler('open', parent, function(response) {})
+		//				})
+		//				$(".viewport").on('click', ' button1', function(e) {
+		//					e.preventDefault()
+		//					let parent = $(this).attr("parent")
+		//					bridge.callHandler('open', parent, function(response) {})
+		//				})
+		//				$(".viewport").on('click', ' button2', function(e) {
+		//					e.preventDefault()
+		//					let parent = $(this).attr("parent")
+		//					bridge.callHandler('open', parent, function(response) {})
+		//				})
+		//				$(".viewport").on('click', ' button3', function(e) {
+		//					e.preventDefault()
+		//					let parent = $(this).attr("parent")
+		//					bridge.callHandler('open', parent, function(response) {})
+		//				})
+		//			})
+		//		}
+		//
+		//		function android() {
+		//			$(".viewport").on('click', ' button0', function(e) {
+		//				e.preventDefault()
+		//				let parent = $(this).attr("parent")
+		//				window.android.open(parent)
+		//			})
+		//			$(".viewport").on('click', ' button1', function(e) {
+		//				e.preventDefault()
+		//				window.android.open(parent)
+		//			})
+		//			$(".viewport").on('click', ' button2', function(e) {
+		//				e.preventDefault()
+		//				window.android.open(parent)
+		//			})
+		//			$(".viewport").on('click', ' button3', function(e) {
+		//				e.preventDefault()
+		//				window.android.open(parent)
+		//			})
+		//		}
+	</script>
+
+</html>

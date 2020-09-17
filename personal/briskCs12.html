@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>活跃度值</title>
+    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+</head>
+<style>
+    * {padding: 0;margin: 0;box-sizing: border-box;}
+    body {font: 16px/150% "Microsoft YaHei", "微软雅黑"; color: #222; -webkit-font-smoothing: antialiased;}
+    body, html {-webkit-overflow-scrolling: touch;overflow-scrolling: touch;width: 100%;}
+    ul {list-style: none;overflow: hidden;}
+    a {text-decoration: none;color: #000000;}
+    ol {display: block; list-style-type: decimal;}
+    i {font-style: normal;}
+    html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 { -webkit-text-size-adjust: 100%;}
+    .img {width: 100%;display: block}
+    .show {position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);min-width: 5rem;background: #ffffff;border: 1px solid #000000;display: none}
+</style>
+
+<body>
+<img src="https://qiniuscd.yxcsx.com/drisk3.png" class="img" alt="">
+</body>
+<script>
+    window.addEventListener('pageshow', (e) => {
+        if (e.persisted || (window.performance && window.performance.navigation.type == 2)) {
+            if (isIos()) {
+                location.reload()
+            }
+        }
+    })
+    function setupWebViewJavascriptBridge(callback) {
+        if (window.WebViewJavascriptBridge) {
+            return callback(WebViewJavascriptBridge);
+        }
+        if (window.WVJBCallbacks) {
+            return window.WVJBCallbacks.push(callback);
+        }
+        window.WVJBCallbacks = [callback];
+        let WVJBIframe = document.createElement('iframe');
+        WVJBIframe.style.display = 'none';
+        WVJBIframe.src = 'https://__bridge_loaded__';
+        document.documentElement.appendChild(WVJBIframe);
+        setTimeout(function () {
+            document.documentElement.removeChild(WVJBIframe)
+        }, 0)
+    }
+
+    // 判断设备为 ios
+    function isIos() {
+        let u = navigator.userAgent;
+        if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+            return true;
+        }
+        return false;
+    }
+    //android调用getToken给h5传token
+    function getToken(token) {
+        sessionStorage.setItem('token', token)
+    }
+    $(function () {
+        if (isIos()) {
+            setupWebViewJavascriptBridge(function (bridge) {
+                //h5通过showTitleRightTxt传值给ios 显示右上角查看
+                // bridge.callHandler('get_activition_nav_right_title', '查看', function (data, responseCallback) {
+                // })
+                //ios通过getToken给h5页面传token
+                bridge.registerHandler('getToken', function (data, responseCallback) {
+                    sessionStorage.setItem('token', data)
+                })
+                //ios通过toRecommend h5执行跳转到h5页面
+                bridge.registerHandler('toH5url', function (response) {
+                    if(sessionStorage.token){
+                        //取消右侧的查看
+                        bridge.callHandler('get_activition_nav_right_title', '', function (data, responseCallback) {
+                        })
+                        window.location.href = 'https://qiniuscd.yxcsx.com/RecommendCs28.html'
+                    }
+                })
+            })
+        } else {
+            //通过showTitleRightTxt传值给ios 显示右上角查看
+            // window.android.showTitleRightTxt('查看')
+        }
+    })
+    //android调用toRecommend 执行跳转
+    function toH5url() {
+        if(sessionStorage.token){
+            //取消右侧的查看
+            window.android.showTitleRightTxt('')
+            window.location.href = 'https://qiniuscd.yxcsx.com/RecommendCs28.html'
+        }
+    }
+</script>
+</html>

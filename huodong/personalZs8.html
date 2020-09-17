@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>邀请有礼</title>
+    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+<!--    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/APIURLcs.js"></script>-->
+        <script type="text/javascript" src="https://qiniuscd.yxcsx.com/APIURLzs.js"></script>
+    <style type="text/css">
+        * {padding: 0;margin: 0;}
+        html, body {width: 100%;min-height: 100%;background: #fff;text-align: center;position: relative}
+        body > img {width: 100%;display: block}
+        a {text-decoration: none;}
+        buttom {padding: 0 1.5rem;color: #fff;background: rgba(112, 191, 42, 1);display: inline-block;margin: 1rem auto;line-height: 2.5rem;border-radius: 1.5rem}
+        .rule {position: fixed;top: 2rem;font-size: 0.9rem; right: 0;color: #fff;background: rgba(255, 255, 255, 0.5);padding: 0 0.5rem;padding-left: 1rem;line-height: 2rem;border-top-left-radius: 1rem;border-bottom-left-radius: 1rem}
+        .operation {position: absolute;bottom: 4%;left: 50%;transform: translateX(-50%);}
+        .operation > a {white-space: nowrap;margin-top: 2rem; display: inline-block; background-image: linear-gradient(#FFBE31, #FF3232);font-size: 1.2rem;padding: 0.5rem 1.5rem;color: #fff;border-radius: 1.5rem}
+        .code {margin-top: 1rem;color: #70BF2A}
+        .code img {width: 1rem;margin-right: 0.5rem}
+        .code a {color: #70BF2A}
+        .layer {position: fixed;display: none; left: 50%;top: 50%;transform: translate(-50%, -50%);background: rgba(0, 0, 0, 0.5);padding: 0 1rem;height: 2rem; line-height: 2rem;color: #fff;border-radius: 0.5rem;z-index: 1000;}
+        .bg {display: none;position: fixed;width: 100%;height: 100%;background: rgba(0, 0, 0, 0.5);top: 0;left: 0;z-index: 100}
+        .pro {position: relative;width: 100%;height: 100%;}
+        .ruleCenter {position: absolute;top: 50%;left: 50%;width: 90%;transform: translate(-50%, -50%);height: 80%;}
+        .ruleCenter .center {padding: 0.5rem; background: #fff;height: calc(100% - 5rem);border-radius: 0.3rem}
+        .ruleCenter .title {line-height: 2rem}
+        .wenzi {width: 100%;height: calc(100% - 3rem);overflow: hidden;overflow-y: auto;text-align: left;padding: 0.5rem;font-size: 0.8rem}
+        .ruleCenter > img {width: 2.5rem;margin-top: 1.5rem}
+        .wtitle {font-weight: 700;margin: 0.5rem 0}
+    </style>
+</head>
+
+<body>
+<div class="layer"></div>
+<div class="rule">活动规则</div>
+<img src="https://qiniuscd.yxcsx.com/yaoqing4.png" alt="">
+<div class="operation">
+    <a href="javascript:void(0);">立即邀请得红包</a>
+    <div class="code"><a href="javascript:void(0);"><img src="https://qiniuscd.yxcsx.com/codeimg1.png"
+                                                         alt="">面对面二维码邀请</a></div>
+</div>
+<div class="bg">
+    <div class="pro">
+        <div class="ruleCenter">
+            <div class="center">
+                <p class="title">活动规则</p>
+                <div class="wenzi">
+                    <p class="wtitle">活动规则</p>
+                    <p>1.邀请新用户注册并下载优小菜APP；</p>
+                    <p>2.新用户通过老用户分享注册成功即可领取分享优惠券；</p>
+                    <p>3.老用户可获得一份分享优惠券；</p>
+                    <p>4.分享优惠券在分享领取之日起5天内有效；</p>
+                    <p>5.相同注册手机号，收货手机号、支付宝帐号，硬件设备和多次相同地址等其他可以视为同一用户情形；</p>
+                    <p>6.被邀请人手机号，在邀请前已作为其他订单收货人完成订单，也将不再视为新用户，优惠券可通过“我的优惠券”查看；</p>
+                    <p>7.优小菜保留法律范围内允许 活动解释权。</p>
+                    <p class="wtitle">奖励规则</p>
+                    <p>1、自己下单激活V1身份，享奖励权益与任务晋升</p>
+                    <p>2、邀请好友首单量达 5 人，进阶V2，奖励 25 元，任务累计=下阶奖励+下阶奖励*20%</p>
+                    <p>3、邀请好友首单量达10人，进阶V3，奖励 50 元，任务累计=下阶奖励+下阶奖励*20%</p>
+                    <p>4、邀请好友首单量达20人，进阶V4，奖励100元，任务累计=下阶奖励+下阶奖励*20%</p>
+                    <p>5、邀请好友首单量达30人，进阶V5，奖励150元，任务累计=下阶奖励+下阶奖励*20%</p>
+                    <p>6、邀请好友首单量达40人，进阶V6，奖励200元，任务累计=下阶奖励+下阶奖励*20%</p>
+                    <p>7、邀请好友首单量达50人，进阶V7，奖励250元，任务累计=下阶奖励+下阶奖励*20%</p>
+                    <p>8、邀请好友首单量达70人，进阶V8，奖励350元，任务累计=下阶奖励+下阶奖励*20%</p>
+                    <p>9、邀请好友首单量达 100 人，进阶V 9，奖励500元，任务累计=下阶奖励+下阶奖励*20%</p>
+                    <p>10、邀请好友首单量达An=a1+(n-1)*d计算 （注：n=2,d=10,a1=100人），奖励=An*5元，任务累计=下阶奖励+下阶奖励*20%。（注An+An×20%)</p>
+                    <p class="wtitle">等级晋升</p>
+                    <p>完成进阶任务，可以领取单项奖金或者任务累计，晋升等级+下级任务，享受对应V1~V8等级权益-邀请用户消费终身-佣金收益奖励(1%~8%)，</p>
+                    <p>1.每阶任务完成、活跃度等级晋升1级；</p>
+                    <p>2.每阶任务完成后，选择领取单项奖励，则分享的好友基数失效；选择任务累计，分享用户基数继续增加达标下阶任务；</p>
+                    <p style="margin-bottom: 5rem">3.活跃等级晋升最高到V8级、任务累计最高到V8级。</p>
+                </div>
+            </div>
+            <img src="https://qiniuscd.yxcsx.com/close.png" class="close" alt="">
+        </div>
+    </div>
+</div>
+
+<script>
+
+    // 判断设备为 ios
+    function isIos() {
+        let u = navigator.userAgent;
+        if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+            return true;
+        }
+        return false;
+    }
+
+
+    function setupWebViewJavascriptBridge(callback) {
+        if (window.WebViewJavascriptBridge) {
+            return callback(WebViewJavascriptBridge);
+        }
+        if (window.WVJBCallbacks) {
+            return window.WVJBCallbacks.push(callback);
+        }
+        window.WVJBCallbacks = [callback];
+        let WVJBIframe = document.createElement('iframe');
+        WVJBIframe.style.display = 'none';
+        WVJBIframe.src = 'https://__bridge_loaded__';
+        document.documentElement.appendChild(WVJBIframe);
+        setTimeout(function () {
+            document.documentElement.removeChild(WVJBIframe)
+        }, 0)
+    }
+    let url = 'https://qiniuscd.yxcsx.com/CodeWuZs11.html'
+    let title = '优小菜推广赚钱'
+    let center = '买菜就上优小菜，30分钟到家快'
+    let imgUrl = 'https://qiniuscd.yxcsx.com/share1.png'
+    function getToken(token) {
+        $(".operation>a").on('click', function (e) {
+            e.stopPropagation()
+            $.ajax({
+                //接口api
+                url: api_url + '/user-proxy/login/isLogin',
+                type: 'get',
+                dataType: 'json',
+                beforeSend: function (XMLHttpRequest) {
+                    XMLHttpRequest.setRequestHeader("token", token);
+                    XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                    XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                },
+                async: false,
+                success: function (res) {
+                    if (res.code == 0) {
+                        window.android.share('', title, center, url + '?userId=' + res.data, imgUrl)
+                    } else {
+                        $(".layer").text(res.msg)
+                        $(".layer").show()
+                        setTimeout(function () {
+                            $(".layer").hide()
+                        }.bind(this), 1000)
+                    }
+                },
+            })
+        })
+        sessionStorage.setItem('token', token)
+    }
+    setupWebViewJavascriptBridge(function (bridge) {
+        bridge.registerHandler('getToken', function (token, responseCallback) {
+            sessionStorage.setItem('token', token)
+            $(".operation>a").on('click', function (e) {
+                e.stopPropagation()
+                $.ajax({
+                    //接口api
+                    url: api_url + '/user-proxy/login/isLogin',
+                    type: 'get',
+                    dataType: 'json',
+                    beforeSend: function (XMLHttpRequest) {
+                        XMLHttpRequest.setRequestHeader("token", token);
+                        XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                        XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                    },
+                    async: false,
+                    success: function (res) {
+                        if (res.code == 0) {
+                            bridge.callHandler('share', {
+                                actId: '',
+                                title: title,
+                                center: center,
+                                url: url + '?userId=' + res.data,
+                                imgUrl: imgUrl
+                            }, function (response) {
+                            })
+                        } else {
+                            $(".layer").text(res.msg)
+                            $(".layer").show()
+                            setTimeout(function () {
+                                $(".layer").hide()
+                            }.bind(this), 1000)
+                        }
+                    },
+                })
+
+            })
+        })
+    })
+    $(function () {
+        $('.rule').on('click', function () {
+            $('.bg').show()
+        })
+        $('.close').on('click', function () {
+            $('.bg').hide()
+        })
+        $('.code a').on('click', function () {
+            $.ajax({
+                url: api_url + '/user-proxy/login/isLogin',
+                type: 'get',
+                dataType: 'json',
+                beforeSend: function (XMLHttpRequest) {
+                    XMLHttpRequest.setRequestHeader("token", sessionStorage.token);
+                    XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                    XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                },
+                async: false,
+                success: function (res) {
+                    if (res.code == 0) {
+                        window.location.href = 'https://qiniuscd.yxcsx.com/CodeZs18.html?token=' + sessionStorage.token + '&userId=' + res.data
+                    } else if (res.code == -1) {
+                        $(".layer").text('登录已失效')
+                        $(".layer").show()
+                        setTimeout(function () {
+                            $(".layer").hide()
+                        }.bind(this), 1000)
+                    } else {
+                        $(".layer").text( res.msg)
+                        $(".layer").show()
+                        setTimeout(function () {
+                            $(".layer").hide()
+                        }.bind(this), 1000)
+                    }
+                }
+            })
+        })
+    })
+
+</script>
+</body>
+
+</html>

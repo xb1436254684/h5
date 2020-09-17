@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>优小菜-跑跑端</title>
+    <style type="text/css">
+        * {padding: 0;margin: 0;}
+        html, body {width: 100%;height: 100%;}
+        body {background: url(https://qiniuscd.yxcsx.com/runbg@3x.png) no-repeat;background-size: 100% 100%;}
+        .btn-bg {background: url(https://qiniuscd.yxcsx.com/bg02@3x.png) no-repeat;text-align: center; background-size: 100% 100%;overflow: hidden; width: 100%;height: 18rem;position: fixed;bottom: 0rem;left: 50%;transform: translateX(-50%);}
+        .btn-bg > img {width: 50%;margin-bottom: 2rem;}
+        .btn-bg a {display: inline-block;padding: 0.5rem 2rem;text-decoration: none;color: #4BCD7E;background: #fff;border-radius: 2rem;display: none;}
+        .btn-bg a > img {width: 1.2rem;vertical-align: middle;margin-top: -0.5rem;}
+        .btn-bg p {margin-top: 1rem;letter-spacing: 0.1rem;}
+        .mubg {position: fixed;top: 0;left: 0;width: 100%;height: 100%;display: none;z-index: 10;}
+        .mubg img {width: 100%;height: 100%;}
+    </style>
+</head>
+
+<body>
+img
+<div class="btn-bg">
+    <img src="https://qiniuscd.yxcsx.com/runappslogan@3x.png"/><br/>
+    <a href="https://itunes.apple.com/cn/app/id1478075222" id="ios">
+        <img src="https://qiniuscd.yxcsx.com/runios@3x.png"/> iOS下载
+    </a>
+    <a href="javascript:void(0);" id="android">
+        <img src="https://qiniuscd.yxcsx.com/runandroid@3x.png"/>Android下载
+    </a>
+</div>
+<div class="mubg">
+    <img src="http://qiniuscd.yxcsx.com/mubg.png"/>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+        crossorigin="anonymous"></script>
+<script>
+    function setupWebViewJavascriptBridge(callback) {
+        if (window.WebViewJavascriptBridge) {
+            return callback(WebViewJavascriptBridge);
+        }
+        if (window.WVJBCallbacks) {
+            return window.WVJBCallbacks.push(callback);
+        }
+        window.WVJBCallbacks = [callback];
+        let WVJBIframe = document.createElement('iframe');
+        WVJBIframe.style.display = 'none';
+        WVJBIframe.src = 'https://__bridge_loaded__';
+        document.documentElement.appendChild(WVJBIframe);
+        setTimeout(function () {
+            document.documentElement.removeChild(WVJBIframe)
+        }, 0)
+    }
+
+    // 判断安卓
+    function isAndroid() {
+        var u = navigator.userAgent;
+        if (u.indexOf("Android") > -1 || u.indexOf("Linux") > -1) {
+            if (window.ShowFitness !== undefined) return true;
+        }
+        return false;
+    }
+
+    // 判断设备为 ios
+    function isIos() {
+        var u = navigator.userAgent;
+        if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+            return true;
+        }
+        return false;
+    }
+
+    function ios() {
+        document.getElementById('ios').style.display = 'inline-block'
+        document.getElementById('android').style.display = 'none'
+        $("#ios").on('click', function () {
+            setupWebViewJavascriptBridge(function (bridge) {
+                bridge.callHandler('toSafari', {url: 'https://qiniuscd.yxcsx.com/rundowm2.html'}, function (response) {
+                })
+            })
+        })
+    }
+
+    function android() {
+        document.getElementById('android').style.display = 'inline-block'
+        document.getElementById('ios').style.display = 'none'
+        $.ajax({
+            type: "get",
+            url: "https://api.yxcsx.com/user-proxy/version_update/getVersion",
+            data: {
+                client: 2
+            },
+            success: function (res) {
+                $("#android").attr("href", res.data.apkUrl)
+            }
+        });
+    }
+
+    isIos() ? ios() : android()
+</script>
+</body>
+
+</html>

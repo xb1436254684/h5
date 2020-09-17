@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>我的推荐</title>
+    <link rel="stylesheet" type="text/css" href="https://qiniuscd.yxcsx.com/mescroll.min.css"/>
+    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+        <script type="text/javascript" src="https://qiniuscd.yxcsx.com/APIURLcs.js"></script>
+<!--    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/APIURLzs.js"></script>-->
+    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/mescroll.min.js"></script>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<style>
+    * {padding: 0;margin: 0;box-sizing: border-box;}
+    body, html {-webkit-overflow-scrolling: touch;overflow-scrolling: touch;width: 100%;height: 100%;background: #f8f8f8;}
+    #example, body {font: 16px/150% "Microsoft YaHei", "微软雅黑"; color: #222; -webkit-font-smoothing: antialiased;background: #fff;overflow: hidden;overflow-y: auto}
+    #example {width: 100%;height: 100%}
+    ul {list-style: none;overflow: hidden;}
+    a {text-decoration: none;color: #000000;}
+    ol {display: block; list-style-type: decimal;}
+    i {font-style: normal;}
+    html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 { -webkit-text-size-adjust: 100%;}
+    * {-webkit-tap-highlight-color: rgba(255, 255, 255, 0);}
+    input, textarea {outline: none}
+    textarea {resize: none}
+    button {cursor: pointer;}
+    button:focus {outline: 0;}
+    .clear {clear: both;}
+    .layer {position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);background: rgba(0, 0, 0, 0.5);padding: 0 1rem;height: 2rem; line-height: 2rem;color: #fff;border-radius: 0.5rem;z-index: 1000;}
+    .kong {position: absolute;width: 100%;height: 100%;top: 0;left: 0;display: none}
+    .btn {position: absolute;bottom: 2rem;height: 3rem;line-height: 3rem; width: 80%;background: #ffffff; left: 50%;transform: translateX(-50%);text-align: center;box-shadow: 0 1px 30px #dddee1;border-radius: 2rem;}
+    .btn img {width: 2rem;vertical-align: middle;margin-top: -4px;margin-left: 1rem;}
+    .wudata {position: absolute;top: 20%;width: 50%;left: 50%;transform: translateX(-50%);text-align: center;}
+    .wudata img {width: 100%;margin-bottom: 1rem;}
+    .wudata p {color: #92969F;}
+    .list {padding: 0 1rem;}
+    .list li {padding: 1rem;}
+    .list li .imgs {width: 2.5rem;height: 2.5rem;margin-right: 1rem;border-radius: 50%;overflow: hidden;float: left;}
+    .list li .imgs img {display: block;width: 100%;height: 100%;}
+    .list li .information {float: left;}
+    .list li .information p:nth-of-type(2) {color: #565A65;font-size: 0.8rem;}
+    .list li .information {float: left;}
+    .list li p {line-height: 1.25rem;}
+    .list li .rewards {float: right;}
+    .list li .rewards p:nth-of-type(1) {font-weight: 700;}
+    .list li .rewards p:nth-of-type(2) {color: #92969F;font-size: 0.8rem;text-align: right}
+    .mescroll-empty {padding-top: 10rem}
+    .mescroll {height: calc(100% - 8rem);padding-bottom: 8rem}
+    .title {padding-top: 0.8rem;box-sizing: border-box}
+    .xtitle {height: 4rem;background: #F3F7F0;padding: 0 1rem;line-height: 3rem;}
+    .reward {padding: 0.3rem 1rem;background: linear-gradient(to right, #FFC015, #FF6E02);color: #fff;font-size: 0.8rem;border-radius: 1rem;float: right;height: 2rem;margin-top: 1.25rem;line-height: 1.5rem}
+    .center {margin: 0 auto;height: calc(100% - 3rem);text-align: center;padding: 0.5rem 0}
+    .center img {display: none;width: 2rem;vertical-align: text-bottom;}
+    .center .shu {color: #A5CAD6;font-size: 1.5rem}
+    .center .btns {padding: 0.2rem 0.8rem;border: 1px solid #70BF2A;color: #70BF2A;border-radius: 1rem;font-size: 0.8rem}
+    .center p:nth-of-type(2) {padding-left: 3rem}
+    .xtitle .tj {float: left;line-height: 1rem;font-size: 0.7rem;padding: 0.8rem 0;}
+    .xtitle .tj p:nth-of-type(1) {font-size: 1rem;font-weight: 700;line-height: 1.5rem;color: #1B1D21}
+    .xtitle .tj p:nth-of-type(1) span {color: #70BF2A}
+    .toux {width: 1.2rem;vertical-align: sub;margin-left: 0.5rem}
+    .bg {width: 100%;height: 100%;position: fixed;top: 0;left: 0;background: rgba(0, 0, 0, 0.5)}
+    .position {width: 100%;height: 100%;position: relative}
+    .upgradePage {width: 80%; position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);border-radius: 0.5rem;background: #ffffff;padding: 1.5rem 0.5rem;text-align: center;}
+    .upgradePage ul {margin-top: 1rem;padding: 1rem}
+    .upgradePage ul li {border: 0.1rem solid #ffffff;box-shadow: 0.1em 0.1rem 0.5rem 0.3rem rgba(255, 255, 255, 0);width: calc((100% - 1rem) / 2);float: left;padding: 0.05rem;position: relative;border-radius: 0.8rem;overflow: hidden;}
+    .upgradePage ul li:nth-of-type(2) {float: right}
+    .upgradePage ul li img {width: 100%;display: block}
+    .upgradePage ul li.sed {border: 0.1rem solid #FE1C1C;box-shadow: 0.1em 0.1rem 0.5rem 0.3rem rgba(254, 28, 28, 0.2)}
+    .upgradePage ul li:nth-of-type(2).sed {border: 0.1rem solid #70BF2A;box-shadow: 0.1em 0.1rem 0.5rem 0.3rem rgba(112, 191, 42, 0.2)}
+    .shuoming {position: absolute;top: 0;left: 0;width: 100%;height: 100%;padding: 2rem 0.5rem;}
+    .upgradePage_title {font-weight: 700;font-size: 1.2rem;line-height: 2rem}
+    .xupgradePage_title {color: #70BF2A;line-height: 2rem}
+    .red p {color: #FE1C1C;font-size: 1.5rem;line-height: 2rem}
+    .red p:nth-of-type(2) {color: #FE1C1C;font-size: 1.2rem}
+    .lv p {color: #70BF2A;line-height: 2rem;font-size: 1.2rem}
+    .explain {text-align: left;color: #92969F;font-size: 0.8rem;padding: 0 1rem}
+    .explain_left {float: left}
+    .explain_right {width: calc(100% - 1.5rem);float: right}
+    .explain img {text-align: left;vertical-align: initial;width: 0.8rem;}
+    .tjbtn {margin-top: 2rem;background: #E8F0E2;color: #ffffff;padding: 1rem 5rem;border: 0;border-radius: 2rem;font-size: 1.2rem}
+    .is_recommendInfo {border-radius: 0.5rem; width: 80%;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);background: #ffffff;text-align: center;padding-top: 1rem;color: #35383F}
+    .is_recommendInfo p:nth-of-type(2) {padding: 0 1rem 1rem 1rem;border-bottom: 1px solid #EFEFEF;color: #35383F}
+    .is_recommendInfo p:nth-of-type(1) {font-size: 1.1rem;font-weight: 700;line-height: 2.5rem}
+    .is_recommendInfo ul li {float: left;width: calc(100% / 2);line-height: 3rem}
+    .is_recommendInfo ul li:nth-of-type(1) {color: #565A65}
+    .is_recommendInfo ul li:nth-of-type(2) {color: #70BF2A}
+    .subSuccess {border-radius: 0.5rem; width: 80%;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);background: #ffffff;text-align: center;padding-top: 3rem;color: #35383F}
+    .subSuccess p:nth-of-type(1) {font-size: 1.5rem;margin-bottom: 1rem}
+    .subSuccess p:nth-of-type(2) {margin-bottom: 5rem}
+    .subSuccess img {width: 3rem;margin-bottom: 1rem}
+    .subSuccess ul {margin-bottom: 1rem}
+    .subSuccess ul li {width: calc(100% / 2);float: left}
+    .subSuccess ul li span {display: block;margin: 0 auto;width: 6rem;border-radius: 1rem;line-height: 2.5rem}
+    .subSuccess ul li:nth-of-type(1) span {background: #EAEAEA;color: #92969F;}
+    .subSuccess ul li:nth-of-type(2) span {background: #70BF2A;color: #FFFFFF}
+</style>
+<body>
+<div id="example"></div>
+<div id="sc"></div>
+<script type="text/babel">
+    class Toggle extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                data: true,//有数据
+                wu: false,//无数据
+                layer: false,//提示框
+                msg: '',//提示框内容
+                //接口api
+                apiUrl: api_url,
+                Token: '6f74f5acd3934910b8bc628ca755bd16',
+                upgrade: false,
+                getReward: 0,
+                recommendInfo: false,
+                sedNum: 0,
+                income: 0,
+                subSuccess: false,
+                reward: false,
+            }
+        }
+
+        componentDidMount(props) {
+            let _this = this
+            // let url = window.location.search;
+            // this.setState({Token: url.substring(url.lastIndexOf('=') + 1, url.length)})
+            window.mescroll = new MeScroll("mescroll", {
+                up: {
+                    page: {
+                        size: 6
+                    }, //每次加载1条数据,模拟loadFull
+                    loadFull: {
+                        use: true, //列表数据过少,是否自动加载下一页,直到满屏或者无更多数据为止;默认false
+                        delay: 100 //延时执行的毫秒数; 延时是为了保证列表数据或占位的图片都已初始化完成,且下拉刷新上拉加载中区域动画已执行完毕;
+                    },
+                    callback: _this.getListData, //上拉回调,此处可简写; 相当于 callback: function (page) { getListData(page); }
+                    isBounce: false, //此处禁止ios回弹,解析(务必认真阅读,特别是最后一点): http://www.mescroll.com/qa.html#q10
+                    clearEmptyId: "dataList", //1.下拉刷新时会自动先清空此列表,再加入数据; 2.无任何数据时会在此列表自动提示空
+                    lazyLoad: {
+                        use: true // 是否开启懒加载,默认false
+                    },
+                    empty: {
+                        icon: "https://qiniuscd.yxcsx.com/kong1.png", //图标,默认null
+                        tip: "如果你主动一点， 这个图也许就不是一个人了", //提示
+                    },
+                }
+            });
+            mescroll.removeEmpty();
+        }
+
+        getListData = (page) => {
+            let _this = this
+            //联网加载数据
+            _this.getListDataFromNet(page.num, page.size, function (curPageData) {
+                //联网成功的回调,隐藏下拉刷新和上拉加载的状态;
+                //mescroll会根据传的参数,自动判断列表如果无任何数据,则提示空;列表无下一页数据,则提示无更多数据;
+                //方法二(推荐): 后台接口有返回列表的总数据量 totalSize
+                mescroll.endBySize(curPageData.length, curPageData.total); //必传参数(当前页的数据个数, 总数据量)
+                //设置列表数据,因为配置了emptyClearId,第一页会清空dataList的数据,所以setListData应该写在最后;
+                _this.setListData(curPageData);
+            }, function () {
+                //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+                mescroll.endErr();
+            });
+        }
+        setListData = (curPageData) => {
+            let _this = this
+            let listDom = document.getElementById("dataList");
+            for (let i = 0; i < curPageData.length; i++) {
+                let pd = curPageData[i];
+                let name
+                let str
+                if (pd.iconUrl != 0) {
+                    pd.consumerNickname == null ? name = '优小菜用户' : name = pd.consumerNickname
+                    str = '<div class="imgs"><img src="' + pd.consumerHeadUrl + '"/></div><div class="information"><p>' + name + '<img class="toux" src=' + pd.iconUrl + ' /></p><p>' + pd.consumerPhone + '</p></div>' +
+                        '<div class="rewards"><p>¥ ' + _this.formatMoney(pd.income) + '</p><p>累计奖励</p></div><div class="clear"></div>';
+                } else {
+                    pd.consumerNickname == null ? name = '优小菜用户' : name = pd.consumerNickname
+                    str = '<div class="imgs"><img src="' + pd.consumerHeadUrl + '"/></div><div class="information"><p>' + name + '</p><p>' + pd.consumerPhone + '</p></div>' +
+                        '<div class="rewards"><p>¥ ' + _this.formatMoney(pd.income) + '</p><p>累计奖励</p></div><div class="clear"></div>';
+                }
+                let liDom = document.createElement("li");
+                liDom.innerHTML = str;
+                listDom.appendChild(liDom);
+            }
+        }
+        getListDataFromNet = (pageNum, pageSize, successCallback, errorCallback) => {
+            let _this = this
+            //延时一秒,模拟联网
+            setTimeout(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: _this.state.apiUrl + '/user-proxy/activityUser/getMyRecommend',
+                    headers: {
+                        'token': _this.state.Token
+                        // 'token': '2bf8cbbd32764f719a1f27a8b2c44426'
+                    },
+                    dataType: 'json',
+                    data: {current: pageNum, size: pageSize},
+                    success: function (res) {
+                        if (res.code == 0) {
+                            if (res.data.recommendInfo.recommenderLevelValue > 0) {
+                                $(".userurl").css('display', 'inline-block')
+                                $(".userurl").attr('src', res.data.recommendInfo.iconUrl)
+                                $(".jiangli").text('当前奖励：' + _this.formatMoney(res.data.recommendInfo.getReward))
+                                res.data.recommendInfo.getReward == 0 ? _this.setState({reward: false}) : _this.setState({reward: true})
+                                $(".dengji").text('距离下一等级还差' + res.data.recommendInfo.nextLevelPeopleNum + '个有效推荐用户')
+                                _this.setState({
+                                    getReward: res.data.recommendInfo.getReward,
+                                })
+                            } else {
+                                $(".dengji").text('您还未激活活跃值， 立即下单即可激活')
+                                _this.setState({recommendInfo: true})
+                            }
+                            _this.setState({
+                                income: _this.formatMoney(res.data.recommendInfo.income)
+                            })
+                            $(".tj span").text('（' + res.data.recommendInfo.validRecommenderNum + '）')
+                            successCallback(res.data.iPage.records);
+                        } else {
+                            mescroll.showEmpty();
+                            mescroll.endUpScroll(false)
+                            _this.setState({layer: true, msg: res.msg})
+                            setTimeout(function () {
+                                _this.setState({layer: false, msg: res.msg})
+                            }.bind(this), 1000)
+                        }
+                    },
+                    error: function (err) {
+                        _this.setState({layer: true, msg: err.status})
+                        setTimeout(function () {
+                            _this.setState({layer: false, msg: err.status})
+                            mescroll.showEmpty();
+                            mescroll.endUpScroll(false)
+                        }.bind(this), 1000)
+                    }
+                });
+            }, 1000)
+        }
+
+        formatMoney(money, toFixedNums = 2) {
+            if (!money) return toFixedNums === 2 ? '0.00' : '0.000';
+            return (money / 100).toFixed(toFixedNums);
+        }
+
+        OpenCode = () => {
+            let _this = this
+            //登录接口
+            $.ajax({
+                url: _this.state.apiUrl + '/user-proxy/login/isLogin',
+                type: 'get',
+                dataType: 'json',
+                beforeSend: function (XMLHttpRequest) {
+                    XMLHttpRequest.setRequestHeader("token", _this.state.Token);
+                    XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                    XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                },
+                async: false,
+                success: function (res) {
+                    if (res.code == 0) {
+                        window.location.href = 'https://qiniuscd.yxcsx.com/CodeZs10.html?token=' + _this.state.Token + '&userId=' + res.data
+                    } else if (res.code == -1) {
+                        _this.setState({layer: true, msg: '登录已失效'})
+                        setTimeout(function () {
+                            _this.setState({layer: false});
+                        }.bind(this), 1000)
+                    } else {
+                        _this.setState({layer: true, msg: res.msg})
+                        setTimeout(function () {
+                            _this.setState({layer: false});
+                        }.bind(this), 1000)
+                    }
+                }
+            })
+        }
+
+        reward = () => {
+            if (this.isIos()) {
+                setupWebViewJavascriptBridge(function (bridge) {
+                    bridge.callHandler('toApp', {value: 'reward'}, function (response) {
+                    })
+                })
+            } else {
+                window.android.toApp('reward')
+            }
+        }
+        upgrade = () => {
+            this.setState({upgrade: true})
+        }
+        //判断是否是安卓
+        isIos = () => {
+            let u = navigator.userAgent;
+            if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+                return true;
+            }
+            return false;
+        }
+        select = (e) => {
+            $(".tjbtn").css('background', '#70BF2A')
+            if (e == 1) {
+                $(".upgradePage li").eq(0).addClass('sed')
+                $(".upgradePage li").eq(1).removeClass('sed')
+                this.setState({sedNum: 1})
+            } else {
+                $(".upgradePage li").eq(1).addClass('sed')
+                $(".upgradePage li").eq(0).removeClass('sed')
+                this.setState({sedNum: 2})
+            }
+        }
+        handCancel = (e) => {
+            this.setState({recommendInfo: false})
+        }
+        Cancel = (e) => {
+            this.setState({subSuccess: false})
+        }
+        goHome = (e) => {
+            console.log(1)
+            wx.miniProgram.navigateTo({url: '/pages/index/index'})
+            // if (isIos()) {
+            //     setupWebViewJavascriptBridge(function (bridge) {
+            //         //homePage  返回首页    lastPage  返回上一页
+            //         bridge.callHandler('closeH5View', 'homePage', function (response) {
+            //         })
+            //     })
+            // } else {
+            //     window.android.closeH5View('homePage')
+            // }
+        }
+        subim = () => {
+            let _this = this
+            if (this.state.sedNum == 1) {
+                $.ajax({
+                    url: _this.state.apiUrl + '/user-proxy/gradeRewardRecord/saveGradeRewardRecord',
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function (XMLHttpRequest) {
+                        XMLHttpRequest.setRequestHeader("token", _this.state.Token);
+                        XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                        XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                    },
+                    async: false,
+                    success: function (res) {
+                        if (res.code == 0) {
+                            _this.setState({upgrade: false, subSuccess: true})
+                        } else {
+                            _this.setState({layer: true, msg: res.msg})
+                            setTimeout(function () {
+                                _this.setState({layer: false});
+                            }.bind(this), 1000)
+                        }
+                    }
+                })
+            } else {
+                this.setState({upgrade: false})
+            }
+        }
+
+        render() {
+            return (
+                <div style={{width: '100%', height: '100%'}}>
+                    <div className="title">
+                        <div className="center">
+                            <img className="userurl" src="https://qiniuscd.yxcsx.com/huangguan.png"/>
+                            <p className="dengji">我的活跃值</p>
+                        </div>
+                        <div className="xtitle">
+                            <div className="tj"><p>推荐有效人数<span>（0）</span></p><p className="jiangli">当前奖励:0.00元</p></div>
+                            {
+                                this.state.reward &&
+                                <span className="reward" onClick={this.upgrade}>领取奖励</span>
+                            }
+                            <div className="clear"></div>
+                        </div>
+                    </div>
+                    <div id="mescroll" className="mescroll">
+                        <ul className="list" id="dataList">
+                        </ul>
+                    </div>
+                    <div className="btn" onClick={this.OpenCode}>生成我的推荐码 <img
+                        src="https://qiniuscd.yxcsx.com/tuijanma.png"/></div>
+                    {
+                        this.state.layer &&
+                        <div className="layer">{this.state.msg}</div>
+                    }
+                    {
+                        this.state.recommendInfo &&
+                        <div className="bg">
+                            <div className="position">
+                                <div className="is_recommendInfo">
+                                    <p>温馨提示</p>
+                                    <p>您还未激活活跃值，去下满{this.state.income}元的订单并完成即可激活</p>
+                                    <ul>
+                                        <li onClick={this.handCancel}>取消</li>
+                                        <li onClick={this.goHome}>去下单</li>
+                                        <div className="clear"></div>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    {
+                        this.state.subSuccess &&
+                        <div className="bg">
+                            <div className="position">
+                                <div className="subSuccess">
+                                    <p>¥{this.formatMoney(this.state.getReward)}</p>
+                                    <img src="https://qiniuscd.yxcsx.com/sh_img3.png"/>
+                                    <p>奖励金额领取成功</p>
+                                    <ul>
+                                        <li><span onClick={this.Cancel}>返回</span></li>
+                                        <li><span onClick={this.reward}>查看奖励</span></li>
+                                        <div className="clear"></div>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    {
+                        this.state.upgrade &&
+                        <div className="bg">
+                            <div className="position">
+                                <div className="upgradePage">
+                                    <p className="upgradePage_title">领取奖励</p>
+                                    <ul>
+                                        <li onClick={e => this.select(1)}>
+                                            <img src="https://qiniuscd.yxcsx.com/reward.png"/>
+                                            <div className="shuoming red">
+                                                <p>¥{this.formatMoney(this.state.getReward)}</p>
+                                                <p>领取奖励</p>
+                                            </div>
+                                        </li>
+                                        <li onClick={e => this.select(2)}>
+                                            <img src="https://qiniuscd.yxcsx.com/upgrade.png"/>
+                                            <div className="shuoming lv">
+                                                <p>累计任务</p>
+                                                <p>晋升下一级</p>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <div className="explain">
+                                        <div className="explain_left"><img
+                                            src="https://qiniuscd.yxcsx.com/warningicon.png"/></div>
+                                        <div
+                                            className="explain_right">晋升说明：选择领取奖励，之前的推荐累计用户将失效，活跃值保持不变；选择累计任务晋升，到达下一级奖励更高。
+                                        </div>
+                                    </div>
+                                    <div className="clear"></div>
+                                    <button className="tjbtn" onClick={this.subim}>确定</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            );
+        }
+    }
+
+    ReactDOM
+        .render(
+            <Toggle/>,
+            document
+                .getElementById(
+                    'example'
+                )
+        )
+    ;
+</script>
+</body>
+
+</html>

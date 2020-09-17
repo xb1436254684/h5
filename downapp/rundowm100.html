@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+	<title>跑跑招聘</title>
+	<style type="text/css">
+		* {padding: 0;margin: 0;}
+		html, body {width: 100%;min-height: 100%;background: #fff;text-align: center}
+		img{width: 100%}
+		a{display: none; text-decoration: none;padding: 0 1.5rem;color: #fff;background: rgba(112, 191, 42, 1);display: inline-block;margin: 1rem auto;line-height: 2.5rem;border-radius: 1.5rem}
+	</style>
+</head>
+
+<body>
+<!--首页跑跑招募菜单-->
+<img src="https://qiniuscd.yxcsx.com/recruit.jpg" alt="">
+<a href="https://itunes.apple.com/cn/app/id1478075222" id="ios">下载跑跑APP</a>
+<a href="javascript:void(0);" id="android">下载跑跑APP</a>
+<script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+<script>
+	function setupWebViewJavascriptBridge(callback) {
+		if (window.WebViewJavascriptBridge) {
+			return callback(WebViewJavascriptBridge);
+		}
+		if (window.WVJBCallbacks) {
+			return window.WVJBCallbacks.push(callback);
+		}
+		window.WVJBCallbacks = [callback];
+		let WVJBIframe = document.createElement('iframe');
+		WVJBIframe.style.display = 'none';
+		WVJBIframe.src = 'https://__bridge_loaded__';
+		document.documentElement.appendChild(WVJBIframe);
+		setTimeout(function () {
+			document.documentElement.removeChild(WVJBIframe)
+		}, 0)
+	}
+	// 判断设备为 ios
+	function isIos() {
+		var u = navigator.userAgent;
+		if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+			return true;
+		}
+		return false;
+	}
+	function ios() {
+		document.getElementById('ios').style.display = 'inline-block'
+		document.getElementById('android').style.display = 'none'
+		$("#ios").on('click', function () {
+			setupWebViewJavascriptBridge(function (bridge) {
+				bridge.callHandler('toSafari', {url: 'https://qiniuscd.yxcsx.com/rundowm2.html'}, function (response) {
+				})
+			})
+		})
+	}
+
+	function android() {
+		document.getElementById('android').style.display = 'inline-block'
+		document.getElementById('ios').style.display = 'none'
+		$.ajax({
+			type: "get",
+			url: "https://api.yxcsx.com/user-proxy/version_update/getVersion",
+			data: {
+				client: 2
+			},
+			success: function (res) {
+				$("#android").attr("href", res.data.apkUrl)
+			}
+		});
+	}
+
+	isIos() ? ios() : android()
+</script>
+</body>
+
+</html>

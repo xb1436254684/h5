@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>我的推荐</title>
+    <link rel="stylesheet" type="text/css" href="https://qiniuscd.yxcsx.com/mescroll.min.css"/>
+    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/mescroll.min.js"></script>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<style>
+    * {padding: 0;margin: 0;box-sizing: border-box;}
+    body, html {-webkit-overflow-scrolling: touch;overflow-scrolling: touch;width: 100%;height: 100%;background: #f8f8f8;}
+    #example, body {font: 16px/150% "Microsoft YaHei", "微软雅黑"; color: #222; -webkit-font-smoothing: antialiased;background: #fff;overflow: hidden;overflow-y: auto}
+    #example {width: 100%;height: 100%}
+    ul {list-style: none;overflow: hidden;}
+    a {text-decoration: none;color: #000000;}
+    ol {display: block; list-style-type: decimal;}
+    i {font-style: normal;}
+    html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 { -webkit-text-size-adjust: 100%;}
+    * {-webkit-tap-highlight-color: rgba(255, 255, 255, 0);}
+    input, textarea {outline: none}
+    textarea {resize: none}
+    button {cursor: pointer;}
+    button:focus {outline: 0;}
+    .clear {clear: both;}
+    .layer {position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);background: rgba(0, 0, 0, 0.5);padding: 0 1rem;height: 2rem; line-height: 2rem;color: #fff;border-radius: 0.5rem;z-index: 1000;}
+    .kong {position: absolute;width: 100%;height: 100%;top: 0;left: 0;display: none}
+    .btn {position: absolute;bottom: 2rem;height: 3rem;line-height: 3rem; width: 80%;background: #ffffff; left: 50%;transform: translateX(-50%);text-align: center;box-shadow: 0 1px 30px #dddee1;border-radius: 2rem;}
+    .btn img {width: 2rem;vertical-align: middle;margin-top: -4px;margin-left: 1rem;}
+    .wudata {position: absolute;top: 20%;width: 50%;left: 50%;transform: translateX(-50%);text-align: center;}
+    .wudata img {width: 100%;margin-bottom: 1rem;}
+    .wudata p {color: #92969F;}
+    .list {padding: 0 1rem;}
+    .list li {padding: 1rem;}
+    .list li .imgs {width: 2.5rem;height: 2.5rem;margin-right: 1rem;border-radius: 50%;overflow: hidden;float: left;}
+    .list li .imgs img {display: block;width: 100%;height: 100%;}
+    .list li .information {float: left;}
+    .list li .information p:nth-of-type(2) {color: #565A65;font-size: 0.8rem;}
+    .list li .information {float: left;}
+    .list li p {line-height: 1.25rem;}
+    .list li .rewards {float: right;}
+    .list li .rewards p:nth-of-type(1) {font-weight: 700;}
+    .list li .rewards p:nth-of-type(2) {color: #92969F;font-size: 0.8rem;text-align: right}
+    .reward {position: fixed;right: 0;top: 75%;padding: 0.3rem 1rem;padding-right: 0.5rem; background: #70BF2A;color: #fff;font-size: 0.8rem;border-bottom-left-radius: 1rem;border-top-left-radius: 1rem;}
+    .mescroll-empty {padding-top: 10rem}
+    .mescroll{padding-bottom: 5rem}
+</style>
+<script>
+    function getToken(token) {
+        sessionStorage.setItem('token', token)
+    }
+    function setupWebViewJavascriptBridge(callback) {
+        if (window.WebViewJavascriptBridge) {
+            return callback(WebViewJavascriptBridge);
+        }
+        if (window.WVJBCallbacks) {
+            return window.WVJBCallbacks.push(callback);
+        }
+        window.WVJBCallbacks = [callback];
+        let WVJBIframe = document.createElement('iframe');
+        WVJBIframe.style.display = 'none';
+        WVJBIframe.src = 'https://__bridge_loaded__';
+        document.documentElement.appendChild(WVJBIframe);
+        setTimeout(function () {
+            document.documentElement.removeChild(WVJBIframe)
+        }, 0)
+    }
+    setupWebViewJavascriptBridge(function (bridge) {
+        bridge.registerHandler('getToken', function (data, responseCallback) {
+            sessionStorage.setItem('token', data)
+        })
+    })
+
+    // 判断设备为 ios
+    function isIos() {
+        let u = navigator.userAgent;
+        if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+            return true;
+        }
+        return false;
+    }
+</script>
+<body>
+<div id="example"></div>
+<script type="text/babel">
+    class Toggle extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                data: true,//有数据
+                wu: false,//无数据
+                layer: false,//提示框
+                msg: '',//提示框内容
+                //接口api
+                apiUrl: 'https://csapi.yxcsx.com',
+                Token: '',
+            }
+        }
+        componentDidMount(props) {
+            let _this = this
+            window.mescroll = new MeScroll("mescroll", {
+                up: {
+                    page: {
+                        size: 12
+                    }, //每次加载1条数据,模拟loadFull
+                    loadFull: {
+                        use: true, //列表数据过少,是否自动加载下一页,直到满屏或者无更多数据为止;默认false
+                        delay: 100 //延时执行的毫秒数; 延时是为了保证列表数据或占位的图片都已初始化完成,且下拉刷新上拉加载中区域动画已执行完毕;
+                    },
+                    callback: _this.getListData, //上拉回调,此处可简写; 相当于 callback: function (page) { getListData(page); }
+                    isBounce: false, //此处禁止ios回弹,解析(务必认真阅读,特别是最后一点): http://www.mescroll.com/qa.html#q10
+                    clearEmptyId: "dataList", //1.下拉刷新时会自动先清空此列表,再加入数据; 2.无任何数据时会在此列表自动提示空
+                    lazyLoad: {
+                        use: true // 是否开启懒加载,默认false
+                    },
+                    empty: {
+                        icon: "https://qiniuscd.yxcsx.com/wu.png", //图标,默认null
+                        tip: "还没有推荐的用户", //提示
+                    },
+                }
+            });
+            mescroll.removeEmpty();
+        }
+
+        getListData = (page) => {
+            let _this = this
+            //联网加载数据
+            _this.getListDataFromNet(page.num, page.size, function (curPageData) {
+                console.log("page.num=" + page.num + ", page.size=" + page.size + ", curPageData.length=" + curPageData.length);
+                //联网成功的回调,隐藏下拉刷新和上拉加载的状态;
+                //mescroll会根据传的参数,自动判断列表如果无任何数据,则提示空;列表无下一页数据,则提示无更多数据;
+                //方法二(推荐): 后台接口有返回列表的总数据量 totalSize
+                mescroll.endBySize(curPageData.records.length,curPageData.total); //必传参数(当前页的数据个数, 总数据量)
+                //设置列表数据,因为配置了emptyClearId,第一页会清空dataList的数据,所以setListData应该写在最后;
+                _this.setListData(curPageData);
+            }, function () {
+                //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+                mescroll.endErr();
+            });
+        }
+        formatMoney = (money) => {
+            if (!money) return '0.00';
+            return (money / 100).toFixed(2);
+        }
+        setListData = (curPageData) => {
+            let _this = this
+            let listDom = document.getElementById("dataList");
+            for (let i = 0; i < curPageData.records.length; i++) {
+                let pd = curPageData.records[i];
+                let name
+                pd.consumerNickname == null ? name = '优小菜用户' : name = pd.consumerNickname
+                let str = '<div class="imgs"><img src="' + pd.consumerHeadUrl.replace('http', 'https') + '"/></div><div class="information"><p>' + name + '</p><p>' + pd.consumerPhone + '</p></div>' +
+                    '<div class="rewards"><p>¥ ' + _this.formatMoney(pd.income) + '</p><p>累计奖励</p></div><div class="clear"></div>';
+                let liDom = document.createElement("li");
+                liDom.innerHTML = str;
+                listDom.appendChild(liDom);
+            }
+        }
+        getListDataFromNet = (pageNum, pageSize, successCallback, errorCallback) => {
+            let _this = this
+            //延时一秒,模拟联网
+            setTimeout(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: _this.state.apiUrl + '/user-proxy/userReferenceDividend/getMyRecommend',
+                    headers: {
+                        'token': sessionStorage.token
+                    },
+                    dataType: 'json',
+                    data: {current: pageNum, size: pageSize},
+                    success: function (res) {
+                        if (res.code == 0) {
+                            successCallback(res.data);
+                        } else {
+                            mescroll.showEmpty();
+                            mescroll.endUpScroll(false)
+                            _this.setState({layer: true, msg: res.msg})
+                            setTimeout(function () {
+                                _this.setState({layer: false, msg: res.msg})
+                            }.bind(this), 1000)
+                        }
+                    },
+                    error: errorCallback
+                });
+            }, 1000)
+        }
+
+        //obj,pictureUrlObj发生改变时编辑filesImg数组
+        componentDidUpdate(nextProps, nextState) {
+
+        }
+
+        OpenCode = () => {
+            let _this = this
+            //登录接口
+            $.ajax({
+                url: _this.state.apiUrl + '/user-proxy/login/isLogin',
+                type: 'get',
+                dataType: 'json',
+                beforeSend: function (XMLHttpRequest) {
+                    XMLHttpRequest.setRequestHeader("token", sessionStorage.token);
+                    XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                    XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                },
+                async: false,
+                success: function (res) {
+                    if (res.code == 0) {
+                        window.location.href = 'https://qiniuscd.yxcsx.com/Code1001.html?token='+sessionStorage.token+'&userId=' + res.data
+                    } else if (res.code == -1) {
+                        _this.setState({layer: true, msg: '登录已失效'})
+                        setTimeout(function () {
+                            _this.setState({layer: false});
+                        }.bind(this), 1000)
+                    } else {
+                        _this.setState({layer: true, msg: res.msg})
+                        setTimeout(function () {
+                            _this.setState({layer: false});
+                        }.bind(this), 1000)
+                    }
+                }
+            })
+        }
+
+        reward = () => {
+            if (this.isIos()) {
+                setupWebViewJavascriptBridge(function (bridge) {
+                    bridge.callHandler('toApp', {value: 'reward'}, function (response) {
+                    })
+                })
+            } else {
+                window.android.toApp('reward')
+            }
+
+        }
+        //判断是否是安卓
+        isIos = () => {
+            let u = navigator.userAgent;
+            if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+                return true;
+            }
+            return false;
+        }
+
+        render() {
+            return (
+                <div style={{width: '100%', height: '100%'}}>
+                    <div id="mescroll" className="mescroll">
+                        <ul className="list" id="dataList">
+                        </ul>
+                        <div className="reward" onClick={this.reward}>查看奖励</div>
+                    </div>
+                    <div className="btn" onClick={this.OpenCode}>生成我的推荐码 <img
+                        src="https://qiniuscd.yxcsx.com/tuijanma.png"/></div>
+                    {
+                        this.state.layer &&
+                        <div className="layer">{this.state.msg}</div>
+                    }
+                </div>
+            );
+        }
+    }
+
+    ReactDOM
+        .render(
+            <Toggle/>,
+            document
+                .getElementById(
+                    'example'
+                )
+        )
+    ;
+</script>
+</body>
+
+</html>

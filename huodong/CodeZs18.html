@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>推荐码</title>
+    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/jquery-3.2.1.min.js"></script>
+<!--    <script type="text/javascript" src="https://qiniuscd.yxcsx.com/APIURLcs.js"></script>-->
+                <script type="text/javascript" src="https://qiniuscd.yxcsx.com/APIURLzs.js"></script>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+    <script type="text/javascript" src="//static.runoob.com/assets/qrcode/qrcode.min.js"></script>
+    <script src="https://cdn.bootcss.com/html2canvas/0.5.0-beta4/html2canvas.js"></script>
+</head>
+<style>
+    * {padding: 0;margin: 0;box-sizing: border-box;}
+    body, html {-webkit-overflow-scrolling: touch;overflow-scrolling: touch;width: 100%;height: 100%;background: #f8f8f8;}
+    ul {list-style: none;overflow: hidden;}
+    a {text-decoration: none;color: #000000;}
+    ol {display: block; list-style-type: decimal;}
+    i {font-style: normal;}
+    html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 { -webkit-text-size-adjust: 100%;}
+    * {-webkit-tap-highlight-color: rgba(255, 255, 255, 0);}
+    input, textarea {outline: none}
+    textarea {resize: none}
+    button {cursor: pointer;}
+    button:focus {outline: 0;}
+    .clear {clear: both;}
+    .layer {display: none; position: fixed;left: 50%;top: 50%;transform: translate(-50%, -50%);background: rgba(0, 0, 0, 0.5);padding: 0 1rem;height: 2rem; line-height: 2rem;color: #fff;border-radius: 0.5rem;z-index: 1000;}
+    body > img {width: 100%;height: 100%;display: block}
+    #qrcode {position: absolute;bottom: 18%;left: 50%;transform: translateX(-50%);padding: 2rem;}
+    .zhongjian {width: 100%; height: 100%;}
+    .btn {position: absolute;bottom: 8%;left: 50%;transform: translateX(-50%);width: 10rem;height: 2.5rem}
+    .imgs {position: fixed;top: 0;left: 0;width: 100%;height: 100%}
+</style>
+
+<body>
+<!--活动二维码-->
+<div class="layer"></div>
+<img src="https://qiniuscd.yxcsx.com/codeimg5.png" alt="">
+<div id="qrcode">
+    <img class="zhongjian" src="https://qiniuscd.yxcsx.com/userlogo.png"/>
+</div>
+<img class="btn" src="https://qiniuscd.yxcsx.com/btn.png" alt="">
+</body>
+<script>
+    // 判断设备为 ios
+    function isIos() {
+        let u = navigator.userAgent;
+        if (u.indexOf("iPhone") > -1 || u.indexOf("iOS") > -1) {
+            return true;
+        }
+        return false;
+    }
+    function setupWebViewJavascriptBridge(callback) {
+        if (window.WebViewJavascriptBridge) {
+            return callback(WebViewJavascriptBridge);
+        }
+        if (window.WVJBCallbacks) {
+            return window.WVJBCallbacks.push(callback);
+        }
+        window.WVJBCallbacks = [callback];
+        let WVJBIframe = document.createElement('iframe');
+        WVJBIframe.style.display = 'none';
+        WVJBIframe.src = 'https://__bridge_loaded__';
+        document.documentElement.appendChild(WVJBIframe);
+        setTimeout(function () {
+            document.documentElement.removeChild(WVJBIframe)
+        }, 0)
+    }
+
+    $(function () {
+        let titleUrl = window.location.search;
+        let urlParmStr = titleUrl.slice(titleUrl.indexOf('?') + 1);//获取问号后所有的字符串
+        let arr = urlParmStr.split('&');//通过&符号将字符串分割转成数组
+        let token = arr[0].split("=")[1];//获取数组中第一个参数
+        let userId = arr[1].split("=")[1];//第二个参数
+        let title = '优小菜推广赚钱'
+        let center = '买菜就上优小菜，30分钟到家快'
+        let url = 'https://qiniuscd.yxcsx.com/CodeWuZs11.html?userId=' + userId
+        let imgUrl = 'https://qiniuscd.yxcsx.com/share1.png'
+        setTimeout(function () {
+            $.ajax({
+                //接口api
+                url: api_url + '/user-proxy/activityUser/getOrCode',
+                type: 'get',
+                dataType: 'json',
+                data:{userId:userId},
+                beforeSend: function (XMLHttpRequest) {
+                    XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                    XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                },
+                async: false,
+                success: function (res) {
+                    if (res.code == 0) {
+                        $(".zhongjian").attr("src",res.data)
+                    } else {
+                        $(".layer").text(res.msg)
+                        $(".layer").show()
+                        setTimeout(function () {
+                            $(".layer").hide()
+                        }.bind(this), 1000)
+                    }
+                },
+                error: function (e) {
+                    $(".layer").text(e.status)
+                    $(".layer").show()
+                    setTimeout(function () {
+                        $(".layer").hide()
+                    }.bind(this), 1000)
+                }
+            })
+        },500)
+        if (isIos()) {
+            setupWebViewJavascriptBridge(function (bridge) {
+                $(".btn").on('click', function (e) {
+                    e.stopPropagation()
+                    $.ajax({
+                        //接口api
+                        url: api_url + '/user-proxy/login/isLogin',
+                        type: 'get',
+                        dataType: 'json',
+                        beforeSend: function (XMLHttpRequest) {
+                            XMLHttpRequest.setRequestHeader("token", token);
+                            XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                            XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                        },
+                        async: false,
+                        success: function (res) {
+                            if (res.code == 0) {
+                                bridge.callHandler('share', {
+                                    actId: '',
+                                    title: title,
+                                    center: center,
+                                    url: url,
+                                    imgUrl: imgUrl
+                                }, function (response) {
+                                })
+                            } else {
+                                $(".layer").text(res.msg)
+                                $(".layer").show()
+                                setTimeout(function () {
+                                    $(".layer").hide()
+                                }.bind(this), 1000)
+                            }
+                        },
+                    })
+                })
+            })
+        } else {
+            $(".btn").on('click', function (e) {
+                e.stopPropagation()
+                $.ajax({
+                    //接口api
+                    url: api_url + '/user-proxy/login/isLogin',
+                    type: 'get',
+                    dataType: 'json',
+                    beforeSend: function (XMLHttpRequest) {
+                        XMLHttpRequest.setRequestHeader("token", token);
+                        XMLHttpRequest.setRequestHeader("auth", 'Basic youshetong:youxiaocai');
+                        XMLHttpRequest.setRequestHeader("Content-Type", 'application/json; charset=UTF-8');
+                    },
+                    async: false,
+                    success: function (res) {
+                        if (res.code == 0) {
+                            window.android.share('', title, center, url, imgUrl)
+                        } else {
+                            $(".layer").text(res.msg)
+                            $(".layer").show()
+                            setTimeout(function () {
+                                $(".layer").hide()
+                            }.bind(this), 1000)
+                        }
+                    },
+                })
+            })
+        }
+    })
+
+</script>
+
+</html>
